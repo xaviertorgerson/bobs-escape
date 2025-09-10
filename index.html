@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bob's Big Escape</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #1a1a2e; /* Dark blue night sky */
+            font-family: 'Press Start 2P', cursive;
+            color: #e0e1dd;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .container {
+            border: 4px solid #0d0d1a;
+            border-radius: 15px;
+            padding: 20px;
+            background-color: #162447;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+        }
+
+        h1 {
+            color: #fca311;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            text-shadow: 3px 3px 0 #000;
+        }
+
+        #score-board {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        #game-board {
+            position: relative;
+            width: 80vw;
+            max-width: 800px;
+            height: 60vh;
+            max-height: 600px;
+            border: 4px solid #e0e1dd;
+            border-radius: 10px;
+            background-color: #2c3e50; /* City pavement color */
+            overflow: hidden;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+        }
+
+        .sprite {
+            position: absolute;
+            font-size: clamp(20px, 5vw, 40px); /* Responsive sprite size */
+            user-select: none;
+            transition: transform 0.1s ease-out;
+        }
+
+        #player.hit {
+            animation: flash 0.5s ease-in-out;
+        }
+
+        @keyframes flash {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.2; transform: scale(1.2); }
+        }
+
+        #start-screen, #game-over-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.85);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            z-index: 10;
+        }
+
+        #start-screen h2, #game-over-screen h2 {
+            font-size: 2.5rem;
+            color: #e74c3c;
+            text-shadow: 4px 4px 0 #000;
+            margin: 0;
+        }
+
+        #start-screen p, #game-over-screen p {
+            font-size: 1rem;
+            line-height: 1.5;
+            max-width: 80%;
+        }
+        
+        button {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            border: 3px solid #fca311;
+            background-color: transparent;
+            color: #fca311;
+            margin-top: 20px;
+            font-family: 'Press Start 2P', cursive;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 5px 5px 0 #000;
+        }
+
+        button:hover {
+            background-color: #fca311;
+            color: #162447;
+            box-shadow: 2px 2px 0 #000;
+            transform: translate(3px, 3px);
+        }
+
+        /* Touch controls for mobile */
+        #touch-controls {
+            display: none; /* Hidden by default */
+            margin-top: 20px;
+            -webkit-user-select: none; /* Safari */
+            -ms-user-select: none; /* IE 10+ */
+            user-select: none;
+        }
+
+        #touch-controls button {
+            width: 70px;
+            height: 70px;
+            font-size: 2rem;
+            margin: 5px;
+            border-radius: 50%;
+        }
+
+        @media (max-width: 800px) {
+            #touch-controls {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                grid-template-rows: repeat(2, 1fr);
+                gap: 5px;
+                width: 250px;
+            }
+            #touch-up { grid-column: 2; grid-row: 1; }
+            #touch-left { grid-column: 1; grid-row: 2; }
+            #touch-right { grid-column: 3; grid-row: 2; }
+            #touch-down { grid-column: 2; grid-row: 2; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Bob's Big Escape</h1>
+        <div id="score-board">Beers: 0</div>
+        <div id="game-board">
+            <div id="start-screen">
+                <h2>Welcome, Bob!</h2>
+                <p>Use Arrow Keys (or tap) to move.<br>Grab the beers (🍺) and dodge your exes (😠)!</p>
+                <button id="start-button">Start Running!</button>
+            </div>
+            <div id="game-over-screen" style="display: none;">
+                <h2>BUSTED!</h2>
+                <p id="final-score"></p>
+                <button id="restart-button">Try Again</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="touch-controls">
+        <button id="touch-up">↑</button>
+        <button id="touch-left">←</button>
+        <button id="touch-down">↓</button>
+        <button id="touch-right">→</button>
+    </div>
+
+    <script>
+        // DOM Elements
+        const gameBoard = document.getElementById('game-board');
+        const scoreBoard = document.getElementById('score-board');
+        const startScreen = document.getElementById('start-screen');
+        const gameOverScreen = document.getElementById('game-over-screen');
+        const finalScoreDisplay = document.getElementById('final-score');
+        const startButton = document.getElementById('start-button');
+        const restartButton = document.getElementById('restart-button');
+
+        // Game Settings
+        const playerSpeed = 15;
+        const exSpeed = 4;
+        const spriteSize = 40;
+        let boardWidth = gameBoard.offsetWidth;
+        let boardHeight = gameBoard.offsetHeight;
+
+        // Game State
+        let player, score, exes, beers, gameIntervals, gameActive;
+        const keysPressed = {};
+
+        function initializeGame() {
+            gameActive = false;
+            score = 0;
+            exes = [];
+            beers = [];
+            if(gameIntervals) gameIntervals.forEach(clearInterval);
+            gameIntervals = [];
+            gameBoard.innerHTML = ''; // Clear previous sprites
+            gameBoard.append(startScreen, gameOverScreen); // Re-append overlays
+            scoreBoard.innerText = `Beers: 0`;
+        }
+
+        function startGame() {
+            gameActive = true;
+            score = 0;
+            boardWidth = gameBoard.offsetWidth;
+            boardHeight = gameBoard.offsetHeight;
+            
+            initializeGame();
+            gameActive = true;
+
+            // Create player
+            player = createSprite('player', '🏃', boardWidth / 2, boardHeight / 2);
+            player.id = 'player';
+            
+            // Hide screens
+            startScreen.style.display = 'none';
+            gameOverScreen.style.display = 'none';
+
+            // Start game loops
+            gameIntervals.push(setInterval(gameLoop, 1000 / 60)); // 60 FPS
+            gameIntervals.push(setInterval(spawnEx, 2000));
+            gameIntervals.push(setInterval(spawnBeer, 1500));
+        }
+
+        function endGame() {
+            if (!gameActive) return;
+            gameActive = false;
+            player.classList.add('hit');
+            gameIntervals.forEach(clearInterval);
+            setTimeout(() => {
+                finalScoreDisplay.innerText = `You collected ${score} beers!`;
+                gameOverScreen.style.display = 'flex';
+            }, 500);
+        }
+
+        function gameLoop() {
+            if (!gameActive) return;
+            movePlayer();
+            moveExes();
+            checkCollisions();
+        }
+
+        // --- Event Listeners ---
+        window.addEventListener('keydown', (e) => {
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                e.preventDefault();
+                keysPressed[e.key] = true;
+            }
+        });
+        window.addEventListener('keyup', (e) => { keysPressed[e.key] = false; });
+        startButton.addEventListener('click', startGame);
+        restartButton.addEventListener('click', startGame);
+        window.addEventListener('resize', () => {
+             boardWidth = gameBoard.offsetWidth;
+             boardHeight = gameBoard.offsetHeight;
+        });
+
+        // --- Touch Controls ---
+        const touchControls = {
+            'touch-up': 'ArrowUp',
+            'touch-down': 'ArrowDown',
+            'touch-left': 'ArrowLeft',
+            'touch-right': 'ArrowRight'
+        };
+
+        for (const [id, key] of Object.entries(touchControls)) {
+            const button = document.getElementById(id);
+            button.addEventListener('touchstart', (e) => { e.preventDefault(); keysPressed[key] = true; });
+            button.addEventListener('touchend', (e) => { e.preventDefault(); keysPressed[key] = false; });
+            button.addEventListener('mousedown', (e) => { e.preventDefault(); keysPressed[key] = true; });
+            button.addEventListener('mouseup', (e) => { e.preventDefault(); keysPressed[key] = false; });
+        }
+        
+        // --- Game Logic Functions ---
+        function movePlayer() {
+            let currentTop = player.offsetTop;
+            let currentLeft = player.offsetLeft;
+
+            if (keysPressed.ArrowUp && currentTop > 0) player.style.top = `${currentTop - playerSpeed}px`;
+            if (keysPressed.ArrowDown && currentTop < boardHeight - spriteSize) player.style.top = `${currentTop + playerSpeed}px`;
+            if (keysPressed.ArrowLeft && currentLeft > 0) player.style.left = `${currentLeft - playerSpeed}px`;
+            if (keysPressed.ArrowRight && currentLeft < boardWidth - spriteSize) player.style.left = `${currentLeft + playerSpeed}px`;
+        }
+        
+        function createSprite(className, emoji, x, y) {
+            const el = document.createElement('div');
+            el.classList.add('sprite', className);
+            el.innerText = emoji;
+            el.style.left = `${x}px`;
+            el.style.top = `${y}px`;
+            gameBoard.appendChild(el);
+            return el;
+        }
+
+        function spawnEx() {
+            const edge = Math.floor(Math.random() * 4);
+            let x, y;
+            // 0: top, 1: right, 2: bottom, 3: left
+            switch(edge) {
+                case 0: x = Math.random() * boardWidth; y = -spriteSize; break;
+                case 1: x = boardWidth; y = Math.random() * boardHeight; break;
+                case 2: x = Math.random() * boardWidth; y = boardHeight; break;
+                case 3: x = -spriteSize; y = Math.random() * boardHeight; break;
+            }
+            const ex = createSprite('ex', '😠', x, y);
+            exes.push(ex);
+        }
+
+        function moveExes() {
+            exes.forEach((ex, index) => {
+                const dx = player.offsetLeft - ex.offsetLeft;
+                const dy = player.offsetTop - ex.offsetTop;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                ex.style.left = `${ex.offsetLeft + (dx / distance) * exSpeed}px`;
+                ex.style.top = `${ex.offsetTop + (dy / distance) * exSpeed}px`;
+            });
+        }
+        
+        function spawnBeer() {
+            const x = Math.random() * (boardWidth - spriteSize);
+            const y = Math.random() * (boardHeight - spriteSize);
+            const beer = createSprite('beer', '🍺', x, y);
+            beers.push(beer);
+        }
+        
+        function checkCollisions() {
+            const playerRect = player.getBoundingClientRect();
+            
+            exes.forEach(ex => {
+                if (isColliding(playerRect, ex.getBoundingClientRect())) endGame();
+            });
+
+            beers.forEach((beer, index) => {
+                if (isColliding(playerRect, beer.getBoundingClientRect())) {
+                    score++;
+                    scoreBoard.innerText = `Beers: ${score}`;
+                    beer.remove();
+                    beers.splice(index, 1);
+                }
+            });
+        }
+
+        function isColliding(rect1, rect2) {
+            return !(rect1.right < rect2.left || rect1.left > rect2.right || rect1.bottom < rect2.top || rect1.top > rect2.bottom);
+        }
+
+        // Initialize on load
+        initializeGame();
+    </script>
+</body>
+</html>
