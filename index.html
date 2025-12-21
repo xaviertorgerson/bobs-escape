@@ -3,811 +3,482 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flow State | The Biological Loop Closed</title>
+    <title>FlowState | The Passive Bio-Audit</title>
+    
+    <meta property="og:title" content="FlowState | Clinical Metabolic Tracking">
+    <meta property="og:description" content="The world's first rim-mounted metabolic lab. Passive urinalysis for hydration, ketones, and kidney function.">
+    <meta property="og:image" content="https://placehold.co/1200x630/050505/C8AA6E?text=FlowState+Bio-Audit">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        brand: {
-                            black: '#050505',
-                            card: '#0F0F0F',
-                            border: '#1F1F1F',
-                            gold: '#D4AF37',
-                            goldDim: '#8A701E',
-                            accent: '#3B82F6',
-                            success: '#10B981'
-                        }
+                        bg: { DEFAULT: '#050505', card: '#0A0A0A', border: '#1A1A1A' },
+                        brand: { gold: '#C8AA6E', dim: '#6B5A3A', text: '#E5E5E5', muted: '#737373', accent: '#3B82F6', success: '#10B981', danger: '#EF4444' }
                     },
                     fontFamily: {
-                        sans: ['Inter', 'system-ui', 'sans-serif'],
-                        display: ['SF Pro Display', 'Inter', 'sans-serif']
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    },
+                    backgroundImage: {
+                        'grid-pattern': "linear-gradient(to right, #1a1a1a 1px, transparent 1px), linear-gradient(to bottom, #1a1a1a 1px, transparent 1px)"
                     },
                     animation: {
-                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
-                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'fade-up': 'fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'shine': 'shine 8s linear infinite',
                     },
                     keyframes: {
-                        fadeInUp: {
-                            '0%': { opacity: '0', transform: 'translateY(20px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' },
-                        }
+                        fadeUp: { '0%': { opacity: '0', transform: 'translateY(20px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+                        shine: { '0%': { backgroundPosition: '200% center' }, '100%': { backgroundPosition: '-200% center' } }
                     }
                 }
             }
         }
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;800&display=swap" rel="stylesheet">
+
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #050505; color: #E5E5E5; }
-        .glass { background: rgba(15, 15, 15, 0.7); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .text-gradient { background: linear-gradient(135deg, #FFF 0%, #94A3B8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .gold-gradient { background: linear-gradient(135deg, #D4AF37 0%, #FFE082 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        body { background-color: #050505; color: #E5E5E5; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
         
-        /* Smooth section transitions */
-        .section-fade { opacity: 0; transform: translateY(20px); transition: all 0.8s ease-out; }
-        .section-fade.visible { opacity: 1; transform: translateY(0); }
+        /* UI Elements */
+        .glass-nav { background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .grid-bg { background-size: 40px 40px; mask-image: linear-gradient(to bottom, black 40%, transparent 100%); }
         
-        /* Grid Background */
-        .grid-bg { background-size: 40px 40px; background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px); }
+        /* Text Shine Effect */
+        .text-shine {
+            background: linear-gradient(to right, #C8AA6E 20%, #FFE082 40%, #FFE082 60%, #C8AA6E 80%);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shine 6s linear infinite;
+        }
+
+        /* Cards */
+        .bento-card { 
+            background: #0A0A0A; border: 1px solid #1A1A1A; transition: all 0.3s ease; 
+            position: relative; overflow: hidden;
+        }
+        .bento-card:hover { border-color: rgba(200, 170, 110, 0.3); transform: translateY(-2px); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5); }
+
+        /* Typography */
+        h1, h2, h3 { letter-spacing: -0.03em; }
+        .mono-label { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #737373; }
+        
+        /* View Logic */
+        .view-section { display: none; opacity: 0; padding-top: 80px; min-height: 100vh; }
+        .view-section.active { display: block; animation: fadeUp 0.6s ease-out forwards; }
     </style>
 </head>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flow State | The Truth From Within</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            black: '#000000',
-                            card: '#121212',
-                            border: '#1F1F1F',
-                            gold: '#D4AF37',
-                            goldDim: '#8A701E',
-                            text: '#F5F5F7',
-                            subtle: '#86868b',
-                            blue: '#0A84FF',
-                            green: '#30D158',
-                            red: '#FF453A'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['SF Pro Display', '-apple-system', 'BlinkMacSystemFont', 'Inter', 'sans-serif'],
-                        mono: ['SF Mono', 'Fira Code', 'monospace']
-                    },
-                    backgroundImage: {
-                        'hero-glow': 'radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.15) 0%, transparent 50%)',
-                    }
-                }
-            }
-        }
-    </script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'SF Pro Display', 'Inter', sans-serif; background-color: #000; color: #F5F5F7; overflow-x: hidden; }
-        
-        /* Apple-style typography */
-        h1, h2, h3 { letter-spacing: -0.02em; }
-        .hero-text { letter-spacing: -0.04em; }
-        
-        /* Glassmorphism */
-        .glass-nav { background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.08); }
-        .bento-card { background: #121212; border-radius: 24px; overflow: hidden; position: relative; transition: transform 0.4s ease; }
-        .bento-card:hover { transform: scale(1.01); }
-        
-        /* Animations */
-        .fade-in-section { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; will-change: opacity, visibility; }
-        .fade-in-section.is-visible { opacity: 1; transform: none; }
-        
-        .gold-shimmer { background: linear-gradient(90deg, #D4AF37 0%, #FFE082 50%, #D4AF37 100%); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shimmer 3s linear infinite; }
-        @keyframes shimmer { to { background-position: 200% center; } }
-    </style>
-<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:SF Pro Display, -apple-system, BlinkMacSystemFont, Inter, sans-serif;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:SF Mono, Fira Code, monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.inset-0{inset:0px}.bottom-0{bottom:0px}.bottom-8{bottom:2rem}.right-0{right:0px}.right-8{right:2rem}.z-10{z-index:10}.z-50{z-index:50}.mx-auto{margin-left:auto;margin-right:auto}.mb-1{margin-bottom:0.25rem}.mb-12{margin-bottom:3rem}.mb-16{margin-bottom:4rem}.mb-2{margin-bottom:0.5rem}.mb-4{margin-bottom:1rem}.mb-6{margin-bottom:1.5rem}.mb-8{margin-bottom:2rem}.mt-1{margin-top:0.25rem}.mt-20{margin-top:5rem}.mt-4{margin-top:1rem}.mt-8{margin-top:2rem}.mt-auto{margin-top:auto}.inline-block{display:inline-block}.flex{display:flex}.grid{display:grid}.hidden{display:none}.h-14{height:3.5rem}.h-2{height:0.5rem}.h-4{height:1rem}.h-5{height:1.25rem}.h-6{height:1.5rem}.h-64{height:16rem}.h-auto{height:auto}.h-full{height:100%}.min-h-screen{min-height:100vh}.w-1\/2{width:50%}.w-4{width:1rem}.w-5{width:1.25rem}.w-6{width:1.5rem}.w-\[30\%\]{width:30%}.w-\[70\%\]{width:70%}.w-\[85\%\]{width:85%}.w-full{width:100%}.max-w-2xl{max-width:42rem}.max-w-3xl{max-width:48rem}.max-w-4xl{max-width:56rem}.max-w-5xl{max-width:64rem}.max-w-7xl{max-width:80rem}.max-w-md{max-width:28rem}.max-w-xl{max-width:36rem}.transform{transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.cursor-pointer{cursor:pointer}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.grid-rows-2{grid-template-rows:repeat(2, minmax(0, 1fr))}.flex-col{flex-direction:column}.items-start{align-items:flex-start}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-16{gap:4rem}.gap-2{gap:0.5rem}.gap-4{gap:1rem}.gap-6{gap:1.5rem}.gap-8{gap:2rem}.space-y-3 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.75rem * var(--tw-space-y-reverse))}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.overflow-hidden{overflow:hidden}.scroll-smooth{scroll-behavior:smooth}.rounded-2xl{border-radius:1rem}.rounded-3xl{border-radius:1.5rem}.rounded-full{border-radius:9999px}.rounded-xl{border-radius:0.75rem}.border{border-width:1px}.border-y{border-top-width:1px;border-bottom-width:1px}.border-b{border-bottom-width:1px}.border-t{border-top-width:1px}.border-brand-border{--tw-border-opacity:1;border-color:rgb(31 31 31 / var(--tw-border-opacity, 1))}.border-brand-gold\/30{border-color:rgb(212 175 55 / 0.3)}.bg-black{--tw-bg-opacity:1;background-color:rgb(0 0 0 / var(--tw-bg-opacity, 1))}.bg-brand-blue\/10{background-color:rgb(10 132 255 / 0.1)}.bg-brand-card{--tw-bg-opacity:1;background-color:rgb(18 18 18 / var(--tw-bg-opacity, 1))}.bg-brand-gold{--tw-bg-opacity:1;background-color:rgb(212 175 55 / var(--tw-bg-opacity, 1))}.bg-brand-gold\/10{background-color:rgb(212 175 55 / 0.1)}.bg-gray-800{--tw-bg-opacity:1;background-color:rgb(31 41 55 / var(--tw-bg-opacity, 1))}.bg-red-500\/10{background-color:rgb(239 68 68 / 0.1)}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-yellow-500{--tw-bg-opacity:1;background-color:rgb(234 179 8 / var(--tw-bg-opacity, 1))}.bg-gradient-to-b{background-image:linear-gradient(to bottom, var(--tw-gradient-stops))}.bg-gradient-to-l{background-image:linear-gradient(to left, var(--tw-gradient-stops))}.bg-hero-glow{background-image:radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.15) 0%, transparent 50%)}.from-brand-blue\/10{--tw-gradient-from:rgb(10 132 255 / 0.1) var(--tw-gradient-from-position);--tw-gradient-to:rgb(10 132 255 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.from-brand-card{--tw-gradient-from:#121212 var(--tw-gradient-from-position);--tw-gradient-to:rgb(18 18 18 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.to-black{--tw-gradient-to:#000 var(--tw-gradient-to-position)}.to-transparent{--tw-gradient-to:transparent var(--tw-gradient-to-position)}.p-3{padding:0.75rem}.p-6{padding:1.5rem}.p-8{padding:2rem}.px-12{padding-left:3rem;padding-right:3rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-4{padding-left:1rem;padding-right:1rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.py-1\.5{padding-top:0.375rem;padding-bottom:0.375rem}.py-24{padding-top:6rem;padding-bottom:6rem}.py-32{padding-top:8rem;padding-bottom:8rem}.py-4{padding-top:1rem;padding-bottom:1rem}.pb-2{padding-bottom:0.5rem}.pb-20{padding-bottom:5rem}.pb-6{padding-bottom:1.5rem}.pt-32{padding-top:8rem}.pt-8{padding-top:2rem}.text-left{text-align:left}.text-center{text-align:center}.text-right{text-align:right}.text-2xl{font-size:1.5rem;line-height:2rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-5xl{font-size:3rem;line-height:1}.text-6xl{font-size:3.75rem;line-height:1}.text-\[10px\]{font-size:10px}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-bold{font-weight:700}.font-light{font-weight:300}.font-medium{font-weight:500}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.leading-\[1\.05\]{line-height:1.05}.tracking-tight{letter-spacing:-0.025em}.tracking-widest{letter-spacing:0.1em}.text-black{--tw-text-opacity:1;color:rgb(0 0 0 / var(--tw-text-opacity, 1))}.text-brand-blue{--tw-text-opacity:1;color:rgb(10 132 255 / var(--tw-text-opacity, 1))}.text-brand-gold{--tw-text-opacity:1;color:rgb(212 175 55 / var(--tw-text-opacity, 1))}.text-brand-green{--tw-text-opacity:1;color:rgb(48 209 88 / var(--tw-text-opacity, 1))}.text-brand-subtle{--tw-text-opacity:1;color:rgb(134 134 139 / var(--tw-text-opacity, 1))}.text-gray-400{--tw-text-opacity:1;color:rgb(156 163 175 / var(--tw-text-opacity, 1))}.text-gray-500{--tw-text-opacity:1;color:rgb(107 114 128 / var(--tw-text-opacity, 1))}.text-gray-600{--tw-text-opacity:1;color:rgb(75 85 99 / var(--tw-text-opacity, 1))}.text-red-500{--tw-text-opacity:1;color:rgb(239 68 68 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.opacity-50{opacity:0.5}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-xl{--tw-shadow:0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-brand-gold\/10{--tw-shadow-color:rgb(212 175 55 / 0.1);--tw-shadow:var(--tw-shadow-colored)}.blur-3xl{--tw-blur:blur(64px);filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.transition{transition-property:color, background-color, border-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-colors{transition-property:color, background-color, border-color, fill, stroke, -webkit-text-decoration-color;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-transform{transition-property:transform;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.selection\:bg-brand-gold *::selection{--tw-bg-opacity:1;background-color:rgb(212 175 55 / var(--tw-bg-opacity, 1))}.selection\:text-black *::selection{--tw-text-opacity:1;color:rgb(0 0 0 / var(--tw-text-opacity, 1))}.selection\:bg-brand-gold::selection{--tw-bg-opacity:1;background-color:rgb(212 175 55 / var(--tw-bg-opacity, 1))}.selection\:text-black::selection{--tw-text-opacity:1;color:rgb(0 0 0 / var(--tw-text-opacity, 1))}.hover\:scale-105:hover{--tw-scale-x:1.05;--tw-scale-y:1.05;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.hover\:bg-gray-200:hover{--tw-bg-opacity:1;background-color:rgb(229 231 235 / var(--tw-bg-opacity, 1))}.hover\:bg-white:hover{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.hover\:text-white:hover{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.group:hover .group-hover\:translate-x-1{--tw-translate-x:0.25rem;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}@media (min-width: 768px){.md\:col-span-1{grid-column:span 1 / span 1}.md\:col-span-2{grid-column:span 2 / span 2}.md\:row-span-1{grid-row:span 1 / span 1}.md\:row-span-2{grid-row:span 2 / span 2}.md\:mt-0{margin-top:0px}.md\:flex{display:flex}.md\:h-\[800px\]{height:800px}.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.md\:grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}.md\:grid-cols-4{grid-template-columns:repeat(4, minmax(0, 1fr))}.md\:flex-row{flex-direction:row}.md\:p-12{padding:3rem}.md\:text-2xl{font-size:1.5rem;line-height:2rem}.md\:text-5xl{font-size:3rem;line-height:1}.md\:text-6xl{font-size:3.75rem;line-height:1}.md\:text-8xl{font-size:6rem;line-height:1}}</style></head>
+<body class="selection:bg-brand-gold selection:text-black">
 
-
-<body class="antialiased selection:bg-brand-gold selection:text-black">
-
-    <nav class="fixed w-full z-50 glass transition-all duration-300">
+    <nav class="fixed w-full z-50 glass-nav top-0">
         <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-2 cursor-pointer" onclick="router('home')">
-                <div class="w-2 h-2 bg-brand-gold rounded-full animate-pulse-slow"></div>
-                <span class="text-xl font-bold tracking-tighter text-white">FLOW<span class="text-brand-gold">STATE</span></span>
+            <div class="flex items-center gap-3 cursor-pointer group" onclick="switchView('product')">
+                <div class="w-2 h-2 bg-brand-gold rounded-sm group-hover:animate-pulse"></div>
+                <span class="font-semibold tracking-tight text-sm">FLOW<span class="text-brand-muted">STATE</span></span>
             </div>
             
-            <div class="hidden md:flex gap-8 text-sm font-medium text-gray-400">
-                <a href="#" onclick="router('home')" class="hover:text-white transition">The Product</a>
-                <a href="#" onclick="router('science')" class="hover:text-white transition">The Science</a>
-                <a href="#" onclick="router('specs')" class="hover:text-white transition">Specs</a>
-                <a href="#" onclick="router('dashboard')" class="hover:text-white transition">Dashboard</a>
+            <div class="hidden md:flex gap-8 text-xs font-medium text-brand-muted">
+                <button onclick="switchView('product')" class="hover:text-white transition-colors">The Flow</button>
+                <button onclick="switchView('product'); setTimeout(() => scrollToId('software'), 100);" class="hover:text-white transition-colors">Flow OS</button>
+                <button onclick="switchView('product'); setTimeout(() => scrollToId('specs'), 100);" class="hover:text-white transition-colors">Technology</button>
             </div>
 
-            <div class="flex items-center gap-4">
-                <a href="#" onclick="router('buy')" class="bg-white text-black hover:bg-gray-200 px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wide transition-all transform hover:scale-105">
-                    Pre-Order
-                </a>
-            </div>
+            <button onclick="scrollToId('buy')" class="text-xs font-mono border border-brand-border bg-white/5 hover:bg-white/10 px-4 py-2 rounded transition-colors text-brand-gold tracking-wide">
+                RESERVE BATCH 1
+            </button>
         </div>
     </nav>
 
-    <div id="app-container">
-        
-        <main id="home" class="page-view block">
+    <div id="app">
+
+        <main id="product" class="view-section active" style="display: block; opacity: 1;">
             
-            <section class="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden grid-bg">
-                <div class="absolute inset-0 bg-gradient-to-b from-transparent via-brand-black/80 to-brand-black z-0"></div>
+            <section class="relative pt-20 pb-32 flex flex-col items-center justify-center min-h-[90vh]">
+                <div class="absolute inset-0 grid-bg bg-grid-pattern opacity-20 pointer-events-none"></div>
                 
-                <div class="max-w-7xl mx-auto px-6 z-10 text-center flex flex-col items-center">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-brand-gold/20 bg-brand-gold/5 mb-8 animate-fade-in-up">
-                        <span class="text-brand-gold text-xs font-bold tracking-widest uppercase">Batch 1: 87% Reserved</span>
+                <div class="max-w-4xl mx-auto px-6 text-center z-10 relative">
+                    <div class="inline-flex items-center gap-2 mb-8 border border-brand-border px-3 py-1 rounded-full bg-brand-card animate-fade-up">
+                        <span class="relative flex h-2 w-2">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-gold opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-gold"></span>
+                        </span>
+                        <span class="mono-label !text-[10px] !text-brand-gold">Passive Bio-Audit</span>
                     </div>
 
-                    <h1 class="text-6xl md:text-8xl font-bold tracking-tighter leading-[1.1] mb-6 animate-fade-in-up" style="animation-delay: 0.1s;">
-                        The Final <br>
-                        <span class="gold-gradient">Feedback Loop.</span>
+                    <h1 class="text-6xl md:text-8xl font-bold mb-8 leading-[1.05] text-white animate-fade-up" style="animation-delay: 0.1s;">
+                        The <span class="text-shine">Flow</span>. <br>
+                        <span class="text-brand-muted">Clinical urinalysis. Every day.</span>
                     </h1>
 
-			<p class="text-xl md:text-2xl text-gray-400 max-w-2xl mx-auto mb-10 z-10 font-light leading-relaxed">
-                		You track inputs. You track recovery. <br>
-                		Now, decode your body's most honest signal.
-            		</p>
+                    <p class="text-xl text-brand-muted max-w-2xl mx-auto mb-12 leading-relaxed animate-fade-up" style="animation-delay: 0.2s;">
+                        A <strong>rim-mounted sensor system</strong> that passively tracks hydration, electrolytes, ketones, and kidney function. No strips. No behavior change.
+                    </p>
 
-                    <div class="flex flex-col sm:flex-row gap-4 w-full justify-center animate-fade-in-up" style="animation-delay: 0.3s;">
-                        <button onclick="router('buy')" class="bg-brand-gold hover:bg-brand-goldDim text-black px-10 py-4 rounded-full font-bold text-lg transition-all transform hover:-translate-y-1">
-                            Secure Your Flow
+                    <div class="flex flex-col sm:flex-row justify-center gap-4 animate-fade-up" style="animation-delay: 0.3s;">
+                        <button onclick="scrollToId('buy')" class="bg-brand-gold hover:bg-brand-dim text-black font-bold text-sm px-10 py-4 rounded-full transition-all hover:scale-105 shadow-[0_0_30px_rgba(200,170,110,0.2)]">
+                            Secure Allocation
                         </button>
-			<button onclick="router('vision')" class="text-white hover:text-brand-gold font-medium px-6 py-3 transition-colors">See how it works &gt;</button>
+                        <button onclick="scrollToId('overview')" class="text-brand-text hover:text-brand-gold font-medium text-sm px-8 py-4 flex items-center gap-2 transition-colors">
+                            The Metrics <i data-lucide="arrow-down" class="w-4 h-4"></i>
+                        </button>
                     </div>
 
-                    <img src="hero-device.png" class="mt-16 rounded-t-3xl border-t border-l border-r border-white/10 shadow-2xl shadow-brand-gold/5 opacity-90 animate-fade-in-up" style="animation-delay: 0.5s;">
-                </div>
-            </section>
-
-
-
-
-
-<!--
-
-            <section id="problem" class="py-32 border-t border-white/5 bg-brand-black">
-                <div class="max-w-5xl mx-auto px-6">
-                    <div class="flex flex-col md:flex-row gap-16 items-center">
-                        <div class="flex-1">
-                            <h2 class="text-4xl font-bold mb-6">The "Quantified Self" Paradox</h2>
-                            <p class="text-lg text-gray-400 mb-6 leading-relaxed">
-                                You optimize your inputs (macros, supplements) and your states (HRV, Sleep). But you have zero visibility into your outputs.
-                            </p>
-                            
-                            <div class="space-y-4">
-                                <div class="flex items-center gap-4 opacity-50">
-                                    <div class="w-12 h-12 rounded-lg bg-gray-800 flex items-center justify-center text-2xl">💤</div>
-                                    <div>
-                                        <h4 class="font-bold">Lagging Indicators</h4>
-                                        <p class="text-sm">Sleep & HRV tell you how you recovered *yesterday*.</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap-4 opacity-50">
-                                    <div class="w-12 h-12 rounded-lg bg-gray-800 flex items-center justify-center text-2xl">🩸</div>
-                                    <div>
-                                        <h4 class="font-bold">Infrequent Snapshots</h4>
-                                        <p class="text-sm">Blood tests happen once a year. Your body changes daily.</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap-4 bg-brand-card p-4 rounded-xl border border-brand-gold/30 relative overflow-hidden">
-                                    <div class="absolute inset-0 bg-brand-gold/5"></div>
-                                    <div class="w-12 h-12 rounded-lg bg-brand-gold text-black flex items-center justify-center text-2xl font-bold z-10">⚡</div>
-                                    <div class="z-10">
-                                        <h4 class="font-bold text-white">Flow State (Real-Time)</h4>
-                                        <p class="text-sm text-gray-300">Continuous metabolic variance analysis. Every single day.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex-1 relative">
-                            <div class="bg-brand-card p-8 rounded-2xl border border-white/5">
-                                <h3 class="text-sm font-bold uppercase tracking-widest text-gray-500 mb-8">Data Resolution Comparison</h3>
-                                <div class="relative h-64 border-l border-b border-gray-700">
-                                    <div class="absolute bottom-10 left-10 w-4 h-4 bg-red-500 rounded-full" title="Annual Physical"></div>
-                                    <div class="absolute bottom-20 right-10 w-4 h-4 bg-red-500 rounded-full" title="Sick Visit"></div>
-                                    
-                                    <svg class="absolute inset-0 w-full h-full" overflow="visible">
-                                        <path d="M0,200 Q50,150 100,180 T200,100 T300,120 T400,50" fill="none" stroke="#D4AF37" stroke-width="3" />
-                                    </svg>
-                                    
-                                    <div class="absolute top-10 right-0 text-brand-gold text-xs font-bold">Your Metabolism (Daily)</div>
-                                    <div class="absolute bottom-4 left-14 text-red-500 text-xs font-bold">Standard Care (Yearly)</div>
-                                </div>
-                            </div>
+                    <div class="mt-20 w-full max-w-3xl mx-auto aspect-[16/9] bg-gradient-to-b from-brand-card/50 to-transparent border border-white/5 rounded-2xl relative flex items-center justify-center animate-fade-up" style="animation-delay: 0.4s;">
+                        <div class="text-center opacity-50">
+                             <i data-lucide="scan-line" class="w-16 h-16 mx-auto mb-4 text-brand-gold"></i>
+                            <p class="mono-label tracking-widest">[ RENDER: Sleek Rim-Mounted Sensor ]</p>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <section class="py-32 bg-brand-card relative">
-                <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-brand-gold/50 to-transparent"></div>
-                
-                <div class="max-w-7xl mx-auto px-6">
-                    <div class="text-center mb-20">
-                        <h2 class="text-4xl md:text-5xl font-bold mb-6">Three Pillars of Biological Truth</h2>
-                        <p class="text-gray-400 max-w-2xl mx-auto">Our multi-physics sensor array translates waste into three actionable value streams.</p>
+            <section id="overview" class="py-32 px-6 bg-brand-card border-t border-brand-border">
+                <div class="max-w-7xl mx-auto">
+                    <div class="text-center mb-16">
+                         <h2 class="text-4xl md:text-5xl font-bold mb-4 text-white">Your body is talking.</h2>
+                         <p class="text-brand-muted text-lg">Start listening.</p>
                     </div>
 
-                    <div class="grid md:grid-cols-3 gap-8">
+                    <div class="grid grid-cols-1 md:grid-cols-3 grid-rows-2 gap-6 h-auto md:h-[800px]">
                         
-                        <div class="group bg-brand-black p-8 rounded-3xl border border-white/5 hover:border-brand-gold/30 transition-all duration-500">
-                            <div class="w-14 h-14 rounded-full bg-orange-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                                <svg class="w-8 h-8 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" /></svg>
+                        <div class="bento-card md:col-span-2 md:row-span-1 p-8 md:p-12 flex flex-col justify-between group">
+                            <div class="z-10">
+                                <div class="flex items-center gap-2 mb-4">
+                                    <i data-lucide="droplet" class="text-brand-accent w-5 h-5"></i>
+                                    <span class="mono-label !text-brand-accent">Precision Hydration</span>
+                                </div>
+                                <h3 class="text-3xl font-bold mb-2 text-white">Beyond 8 Glasses.</h3>
+                                <p class="text-brand-muted max-w-md">Optical spectrometry measures the specific gravity (SG) of your stream. Know exactly when to hydrate, and when you are just flushing water.</p>
                             </div>
-                            <h3 class="text-2xl font-bold mb-4">1. Metabolic Fuel</h3>
-                            <p class="text-gray-400 text-sm mb-6 h-12">Are you burning fat or sugar right now? Validate your fasting and diet strategy instantly.</p>
-                            <ul class="space-y-3 text-sm text-gray-300">
-                                <li class="flex gap-2"><span class="text-brand-gold">✓</span> Real-time Ketone (Acetone) detection</li>
-                                <li class="flex gap-2"><span class="text-brand-gold">✓</span> Glucose spike warning system</li>
-                                <li class="flex gap-2"><span class="text-brand-gold">✓</span> Fasting efficacy tracking</li>
-                            </ul>
+                            <div class="absolute right-0 bottom-0 w-1/2 h-full bg-gradient-to-l from-brand-accent/5 to-transparent"></div>
+                            <div class="absolute bottom-8 right-8 text-right">
+                                <div class="text-5xl font-bold text-brand-accent">1.015</div>
+                                <div class="mono-label !text-brand-accent/70 mt-1">Optimal SG</div>
+                            </div>
                         </div>
 
-                        <div class="group bg-brand-black p-8 rounded-3xl border border-white/5 hover:border-blue-500/30 transition-all duration-500">
-                            <div class="w-14 h-14 rounded-full bg-blue-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                                <svg class="w-8 h-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>
+                        <div class="bento-card md:col-span-1 md:row-span-2 p-8 flex flex-col relative group">
+                            <div class="z-10 mb-8">
+                                <div class="flex items-center gap-2 mb-4">
+                                    <i data-lucide="zap" class="text-brand-gold w-5 h-5"></i>
+                                    <span class="mono-label !text-brand-gold">Electrolytes</span>
+                                </div>
+                                <h3 class="text-3xl font-bold mb-4 text-white">Salt Wasting.</h3>
+                                <p class="text-brand-muted text-sm leading-relaxed">
+                                    Are you retaining sodium or flushing it? Our capacitive sensors detect electrolyte density to optimize post-workout recovery.
+                                </p>
                             </div>
-                            <h3 class="text-2xl font-bold mb-4">2. True Hydration</h3>
-                            <p class="text-gray-400 text-sm mb-6 h-12">Beyond "drink 8 glasses." We measure optical density and electrolyte waste.</p>
-                            <ul class="space-y-3 text-sm text-gray-300">
-                                <li class="flex gap-2"><span class="text-blue-500">✓</span> Specific Gravity analysis</li>
-                                <li class="flex gap-2"><span class="text-blue-500">✓</span> Salt wasting (Electrolyte balance)</li>
-                                <li class="flex gap-2"><span class="text-blue-500">✓</span> Kidney stress markers (Turbidity)</li>
-                            </ul>
+                            
+                            <div class="mt-auto space-y-4">
+                                <div>
+                                    <div class="flex justify-between text-xs text-brand-muted mb-1"><span>Sodium</span><span class="text-brand-danger">Low</span></div>
+                                    <div class="w-full h-1.5 bg-brand-border rounded-full overflow-hidden">
+                                        <div class="h-full bg-brand-danger w-[30%]"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs text-brand-muted mb-1"><span>Potassium</span><span class="text-brand-gold">Optimal</span></div>
+                                    <div class="w-full h-1.5 bg-brand-border rounded-full overflow-hidden">
+                                        <div class="h-full bg-brand-gold w-[85%]"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs text-brand-muted mb-1"><span>Magnesium</span><span class="text-brand-gold">Optimal</span></div>
+                                    <div class="w-full h-1.5 bg-brand-border rounded-full overflow-hidden">
+                                        <div class="h-full bg-brand-gold w-[70%]"></div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="group bg-brand-black p-8 rounded-3xl border border-white/5 hover:border-green-500/30 transition-all duration-500">
-                            <div class="w-14 h-14 rounded-full bg-green-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                                <svg class="w-8 h-8 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        <div class="bento-card md:col-span-1 p-8">
+                             <div class="flex items-center gap-2 mb-4">
+                                <i data-lucide="wind" class="text-brand-success w-5 h-5"></i>
+                                <span class="mono-label !text-brand-success">Microbiome</span>
                             </div>
-                            <h3 class="text-2xl font-bold mb-4">3. CNS Readiness</h3>
-                            <p class="text-gray-400 text-sm mb-6 h-12">Using urology metrics to estimate Autonomic Nervous System fatigue.</p>
-                            <ul class="space-y-3 text-sm text-gray-300">
-                                <li class="flex gap-2"><span class="text-green-500">✓</span> Flow Rate (Qmax) tracking</li>
-                                <li class="flex gap-2"><span class="text-green-500">✓</span> Sympathetic Tone estimation</li>
-                                <li class="flex gap-2"><span class="text-green-500">✓</span> Prostate health baselines</li>
-                            </ul>
+                            <h3 class="text-2xl font-bold mb-2 text-white">Gas Signatures.</h3>
+                            <p class="text-brand-muted text-sm">AI analysis of Methane & H2S detects gut fermentation and food intolerances instantly.</p>
+                        </div>
+
+                        <div class="bento-card md:col-span-1 p-8">
+                             <div class="flex items-center gap-2 mb-4">
+                                <i data-lucide="flame" class="text-brand-danger w-5 h-5"></i>
+                                <span class="mono-label !text-brand-danger">Fuel Source</span>
+                            </div>
+                            <h3 class="text-2xl font-bold mb-2 text-white">Real-Time Ketones.</h3>
+                            <p class="text-brand-muted text-sm">Validate your fasting state. Detect acetone vapor to confirm fat adaptation without finger pricks.</p>
                         </div>
 
                     </div>
                 </div>
             </section>
--->
 
-
-
-
-
-
-
-
-<section id="overview" class="py-32 px-6 bg-brand-card">
-        <div class="max-w-7xl mx-auto">
-            <h2 class="text-4xl md:text-5xl font-bold mb-16 text-center">Your body is talking. <br><span class="text-brand-subtle">Start listening.</span></h2>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 grid-rows-2 gap-6 h-auto md:h-[800px]">
-                
-                <div class="bento-card md:col-span-2 md:row-span-1 p-8 md:p-12 flex flex-col justify-between group">
-                    <div class="z-10">
-                        <div class="flex items-center gap-2 mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="droplet" class="lucide lucide-droplet text-brand-blue w-5 h-5"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"></path></svg>
-                            <span class="text-xs font-bold uppercase tracking-widest text-brand-blue">Precision Hydration</span>
-                        </div>
-                        <h3 class="text-3xl font-bold mb-2">Beyond 8 Glasses.</h3>
-                        <p class="text-gray-400 max-w-md">Optical spectrometry measures the specific gravity of your stream. Know exactly when to hydrate, and when you are just flushing water.</p>
-                    </div>
-                    <div class="absolute right-0 bottom-0 w-1/2 h-full bg-gradient-to-l from-brand-blue/10 to-transparent"></div>
-                    <div class="absolute bottom-8 right-8 text-right">
-                        <div class="text-5xl font-bold text-brand-blue">1.015</div>
-                        <div class="text-sm text-gray-500 uppercase">Optimal SG</div>
-                    </div>
-                </div>
-
-                <div class="bento-card md:col-span-1 md:row-span-2 p-8 flex flex-col relative group">
-                    <div class="z-10">
-                         <div class="flex items-center gap-2 mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="zap" class="lucide lucide-zap text-brand-gold w-5 h-5"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"></path></svg>
-                            <span class="text-xs font-bold uppercase tracking-widest text-brand-gold">Electrolytes</span>
-                        </div>
-                        <h3 class="text-3xl font-bold mb-4">Salt Wasting.</h3>
-                        <p class="text-gray-400 text-sm mb-8">Are you retaining sodium or flushing it? Our capacitive sensors detect electrolyte density.</p>
+            <section id="health" class="py-32 bg-black border-y border-brand-border relative overflow-hidden">
+                <div class="max-w-4xl mx-auto px-6 text-center relative z-10">
+                    <div class="inline-flex items-center gap-2 mb-6 border border-brand-border px-3 py-1 rounded-full bg-brand-card">
+                        <i data-lucide="shield-check" class="w-3 h-3 text-white"></i>
+                        <span class="mono-label !text-[10px] !text-white">Active Bio-Defense</span>
                     </div>
                     
-                    <div class="mt-auto space-y-3">
-                        <div class="flex justify-between text-xs text-gray-500"><span>Sodium</span><span>Low</span></div>
-                        <div class="w-full h-2 bg-gray-800 rounded-full overflow-hidden">
-                            <div class="h-full bg-yellow-500 w-[30%]"></div>
+                    <h2 class="text-4xl md:text-5xl font-bold mb-6 text-white">A Guardian on the Rim.</h2>
+                    <p class="text-xl text-brand-muted mb-16 max-w-2xl mx-auto">
+                        Flow State establishes your biological baseline. When deviations occur, you know first.
+                    </p>
+
+                    <div class="grid md:grid-cols-2 gap-8 text-left">
+                        <div class="p-8 rounded-2xl border border-brand-border bg-brand-card/50 flex items-start gap-5 hover:border-brand-danger/30 transition-colors group">
+                            <div class="p-3 bg-brand-danger/10 rounded-full text-brand-danger group-hover:bg-brand-danger group-hover:text-white transition-colors">
+                                <i data-lucide="activity" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-bold text-white mb-2">Kidney Health</h4>
+                                <p class="text-sm text-brand-muted leading-relaxed">Detection of micro-hematuria (invisible blood) or high protein levels often precede stones or infection.</p>
+                            </div>
                         </div>
-                        <div class="flex justify-between text-xs text-gray-500"><span>Potassium</span><span>Optimal</span></div>
-                        <div class="w-full h-2 bg-gray-800 rounded-full overflow-hidden">
-                            <div class="h-full bg-brand-gold w-[85%]"></div>
+                        
+                        <div class="p-8 rounded-2xl border border-brand-border bg-brand-card/50 flex items-start gap-5 hover:border-brand-accent/30 transition-colors group">
+                            <div class="p-3 bg-brand-accent/10 rounded-full text-brand-accent group-hover:bg-brand-accent group-hover:text-white transition-colors">
+                                <i data-lucide="bacteria" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-bold text-white mb-2">UTI Detection</h4>
+                                <p class="text-sm text-brand-muted leading-relaxed">Ammonia spikes and leukocyte esterase proxies provide early warning for urinary tract issues.</p>
+                            </div>
                         </div>
-                        <div class="flex justify-between text-xs text-gray-500"><span>Magnesium</span><span>Optimal</span></div>
-                        <div class="w-full h-2 bg-gray-800 rounded-full overflow-hidden">
-                            <div class="h-full bg-brand-gold w-[70%]"></div>
-                        </div>
                     </div>
                 </div>
-
-                <div class="bento-card md:col-span-1 p-8">
-                     <div class="flex items-center gap-2 mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="wind" class="lucide lucide-wind text-brand-green w-5 h-5"><path d="M12.8 19.6A2 2 0 1 0 14 16H2"></path><path d="M17.5 8a2.5 2.5 0 1 1 2 4H2"></path><path d="M9.8 4.4A2 2 0 1 1 11 8H2"></path></svg>
-                        <span class="text-xs font-bold uppercase tracking-widest text-brand-green">Microbiome</span>
-                    </div>
-                    <h3 class="text-2xl font-bold mb-2">Gas Signatures.</h3>
-                    <p class="text-gray-400 text-sm">AI analysis of methane and hydrogen sulfide detects gut fermentation and food intolerances instantly.</p>
-                </div>
-
-                <div class="bento-card md:col-span-1 p-8">
-                     <div class="flex items-center gap-2 mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="flame" class="lucide lucide-flame text-red-500 w-5 h-5"><path d="M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4"></path></svg>
-                        <span class="text-xs font-bold uppercase tracking-widest text-red-500">Fuel Source</span>
-                    </div>
-                    <h3 class="text-2xl font-bold mb-2">Real-Time Ketones.</h3>
-                    <p class="text-gray-400 text-sm">Validate your fasting state. Detect acetone vapor to confirm fat adaptation without finger pricks.</p>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-<section id="health" class="py-32 bg-black border-y border-brand-border">
-        <div class="max-w-4xl mx-auto px-6 text-center">
-            <h2 class="text-4xl md:text-5xl font-bold mb-6">A Guardian on the Rim.</h2>
-            <p class="text-xl text-gray-400 mb-16 max-w-2xl mx-auto">
-                Flow State establishes your biological baseline. When deviations occur, you know first.
-            </p>
-
-            <div class="grid md:grid-cols-2 gap-8 text-left">
-                <div class="p-6 rounded-2xl border border-brand-border bg-brand-card flex items-start gap-4">
-                    <div class="p-3 bg-red-500/10 rounded-full text-red-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="shield-alert" class="lucide lucide-shield-alert w-6 h-6"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path><path d="M12 8v4"></path><path d="M12 16h.01"></path></svg>
-                    </div>
-                    <div>
-                        <h4 class="text-lg font-bold text-white">Kidney Health</h4>
-                        <p class="text-sm text-gray-400 mt-1">Detection of micro-hematuria (invisible blood) or high protein levels often precede stones or infection.</p>
-                    </div>
-                </div>
-                <div class="p-6 rounded-2xl border border-brand-border bg-brand-card flex items-start gap-4">
-                    <div class="p-3 bg-brand-blue/10 rounded-full text-brand-blue">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="activity" class="lucide lucide-activity w-6 h-6"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"></path></svg>
-                    </div>
-                    <div>
-                        <h4 class="text-lg font-bold text-white">UTI Detection</h4>
-                        <p class="text-sm text-gray-400 mt-1">Ammonia spikes and leukocyte esterase proxies provide early warning for urinary tract issues.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-<section class="py-32 px-6 bg-gradient-to-b from-brand-card to-black overflow-hidden">
-        <div class="max-w-7xl mx-auto text-center">
-            <h2 class="text-4xl md:text-5xl font-bold mb-8">Visualize the Invisible.</h2>
-            <p class="text-lg text-gray-400 mb-12">Your daily biology, beautifully mapped.</p>
-            
-            <div class="relative max-w-5xl mx-auto bg-black border border-brand-border rounded-3xl p-8 shadow-2xl">
-                <div class="flex justify-between items-center mb-8 border-b border-brand-border pb-6">
-                    <div class="text-left">
-                        <div class="text-xs text-gray-500 uppercase tracking-widest mb-1">Status</div>
-                        <div class="text-2xl font-bold text-white">Optimal Flow</div>
-                    </div>
-                    <div class="text-right">
-                        <div class="text-xs text-gray-500 uppercase tracking-widest mb-1">Score</div>
-                        <div class="text-3xl font-bold text-brand-gold">98</div>
-                    </div>
-                </div>
-
-                <div class="h-64 w-full">
-                    <canvas id="mainChart" width="974" height="512" style="display: block; box-sizing: border-box; height: 256px; width: 487px;"></canvas>
-                </div>
-
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-8 pt-8 border-t border-brand-border">
-                    <div class="text-left">
-                        <div class="text-xs text-gray-500 mb-1">Ketones</div>
-                        <div class="text-xl font-bold text-white">1.8 <span class="text-sm text-gray-600">mM</span></div>
-                    </div>
-                    <div class="text-left">
-                        <div class="text-xs text-gray-500 mb-1">Hydration</div>
-                        <div class="text-xl font-bold text-brand-blue">96%</div>
-                    </div>
-                    <div class="text-left">
-                        <div class="text-xs text-gray-500 mb-1">pH Balance</div>
-                        <div class="text-xl font-bold text-white">6.5</div>
-                    </div>
-                    <div class="text-left">
-                        <div class="text-xs text-gray-500 mb-1">Electrolytes</div>
-                        <div class="text-xl font-bold text-brand-gold">Balanced</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-<section id="specs" class="py-32 px-6 bg-black border-t border-gray-900">
-        <div class="max-w-5xl mx-auto">
-            <div class="text-center mb-16 fade-in-section visible">
-                <h2 class="text-4xl font-bold mb-4">Under the Hood of <span class="text-brand-gold">Flow One</span></h2>
-                <p class="text-gray-400">Engineering precision meets biological chaos.</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16 fade-in-section visible">
-                <div>
-                    <h3 class="text-lg font-semibold mb-6 border-b border-gray-800 pb-2 text-white">Sensor Fusion Array</h3>
-                    <ul class="space-y-4 text-sm text-gray-400">
-                        <li class="flex justify-between items-center">
-                            <span class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="eye" class="lucide lucide-eye w-4 h-4"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path><circle cx="12" cy="12" r="3"></circle></svg> Optical</span> 
-                            <span class="text-white text-right">AMS AS7265x 18-Ch Spectrometer<br><span class="text-xs text-gray-500">UV-VIS-NIR Analysis</span></span>
-                        </li>
-                        <li class="flex justify-between items-center pt-4 border-t border-gray-900">
-                            <span class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="wind" class="lucide lucide-wind w-4 h-4"><path d="M12.8 19.6A2 2 0 1 0 14 16H2"></path><path d="M17.5 8a2.5 2.5 0 1 1 2 4H2"></path><path d="M9.8 4.4A2 2 0 1 1 11 8H2"></path></svg> Olfactory</span> 
-                            <span class="text-white text-right">Bosch BME688 AI Gas Sensor<br><span class="text-xs text-gray-500">VOCs (Acetone, Methane)</span></span>
-                        </li>
-                        <li class="flex justify-between items-center pt-4 border-t border-gray-900">
-                            <span class="flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="scan" class="lucide lucide-scan w-4 h-4"><path d="M3 7V5a2 2 0 0 1 2-2h2"></path><path d="M17 3h2a2 2 0 0 1 2 2v2"></path><path d="M21 17v2a2 2 0 0 1-2 2h-2"></path><path d="M7 21H5a2 2 0 0 1-2-2v-2"></path></svg> Lidar</span> 
-                            <span class="text-white text-right">ST VL53L5CX Time-of-Flight<br><span class="text-xs text-gray-500">Flow Rate &amp; Volume</span></span>
-                        </li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h3 class="text-lg font-semibold mb-6 border-b border-gray-800 pb-2 text-white">Hardware Specs</h3>
-                    <ul class="space-y-4 text-sm text-gray-400">
-                        <li class="flex justify-between"><span>Connectivity</span> <span class="text-white">Bluetooth 5.3 LE, Wi-Fi 6</span></li>
-                        <li class="flex justify-between pt-4 border-t border-gray-900"><span>Battery Life</span> <span class="text-white">3 Months (Rechargeable)</span></li>
-                        <li class="flex justify-between pt-4 border-t border-gray-900"><span>Charging</span> <span class="text-white">Waterproof USB-C</span></li>
-                        <li class="flex justify-between pt-4 border-t border-gray-900"><span>Waterproofing</span> <span class="text-white">IP68 Rated (Submersible)</span></li>
-                        <li class="flex justify-between pt-4 border-t border-gray-900"><span>Privacy</span> <span class="text-brand-gold">On-Device Edge AI Processing</span></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
-<!--
-<section id="specs" class="py-24 bg-black">
-        <div class="max-w-5xl mx-auto px-6">
-            <h3 class="text-xs font-bold text-brand-subtle uppercase tracking-widest mb-12">Technical Specifications</h3>
-            
-            <div class="grid md:grid-cols-2 gap-16">
-                <div>
-                    <h4 class="text-white font-bold mb-4">Sensor Array</h4>
-                    <ul class="space-y-4 text-sm text-gray-400">
-                        <li class="flex justify-between border-b border-brand-border pb-2">
-                            <span>Optical</span> <span class="text-white">18-Ch Spectrometer (UV-VIS-NIR)</span>
-                        </li>
-                        <li class="flex justify-between border-b border-brand-border pb-2">
-                            <span>Olfactory</span> <span class="text-white">MEMS VOC Gas Sensor</span>
-                        </li>
-                        <li class="flex justify-between border-b border-brand-border pb-2">
-                            <span>Flow</span> <span class="text-white">8x8 Zone ToF Lidar</span>
-                        </li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="text-white font-bold mb-4">Design &amp; Power</h4>
-                    <ul class="space-y-4 text-sm text-gray-400">
-                        <li class="flex justify-between border-b border-brand-border pb-2">
-                            <span>Materials</span> <span class="text-white">Medical Grade Polycarbonate</span>
-                        </li>
-                        <li class="flex justify-between border-b border-brand-border pb-2">
-                            <span>Waterproof</span> <span class="text-white">IP68 Rated</span>
-                        </li>
-                        <li class="flex justify-between border-b border-brand-border pb-2">
-                            <span>Battery</span> <span class="text-white">3 Months (USB-C)</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
--->
-    <section id="buy" class="py-32 px-6 bg-brand-card text-center">
-        <div class="max-w-3xl mx-auto">
-            <div class="inline-block mb-6">
-                <span class="gold-shimmer text-sm font-bold uppercase tracking-widest">
-                    Production Batch 1
-                </span>
-            </div>
-            
-            <h2 class="text-5xl md:text-6xl font-bold mb-8">Secure Your Flow.</h2>
-            
-            <p class="text-gray-400 mb-12 max-w-xl mx-auto">
-                Join the 87% of early adopters who have already reserved their unit. 
-                Experience the clarity of total biological insight.
-            </p>
-            
-            <div class="flex flex-col items-center gap-4">
-                <button class="bg-brand-gold hover:bg-white text-black text-lg font-bold py-4 px-12 rounded-full transition-all transform hover:scale-105 shadow-xl shadow-brand-gold/10">
-                    Reserve Now — $100
-                </button>
-                <p class="mt-6 text-sm text-gray-500">
-                    Fully refundable. Est. Retail Price $499. <br>
-                    <span class="text-brand-gold">Ships Q3 2026.</span>
-                </p>
-<!--
-                <p class="text-xs text-gray-600">
-                    Fully Refundable Deposit. Estimated Retail $499.
-                </p>
--->
-            </div>
-            
-        </div>
-    </section>
-
-<!--
-            <section class="py-32 text-center px-6">
-
-		<h2 class="text-5xl md:text-7xl font-bold mb-8 relative z-10">Find Your Flow.</h2>
-                
-		<h2 class="text-5xl font-bold mb-8">Close Your Loop.</h2>
-                <p class="text-xl text-gray-400 max-w-2xl mx-auto mb-12">
-                    The technology is ready. The insights are waiting. <br>
-                    Are you ready to see what you've been missing?
-                </p>
-                
-                <div class="inline-block p-1 rounded-3xl bg-gradient-to-br from-brand-gold to-brand-goldDim">
-                    <button onclick="router('buy')" class="bg-brand-black text-white px-12 py-6 rounded-[20px] font-bold text-xl hover:bg-gray-900 transition-all">
-                        Reserve Now — $100 Deposit
-                    </button>
-                </div>
-                
-                <p class="mt-6 text-sm text-gray-500">
-                    Fully refundable. Est. Retail Price $499. <br>
-                    <span class="text-brand-gold">Ships Q3 2026.</span>
-                </p>
             </section>
--->
 
-            <section class="py-20 bg-brand-black border-y border-white/5">
+            <section id="software" class="py-32 px-6 bg-gradient-to-b from-brand-card to-black">
+                <div class="max-w-7xl mx-auto">
+                    <div class="text-center mb-12">
+                         <h2 class="text-4xl md:text-5xl font-bold mb-4 text-white">Flow OS</h2>
+                         <p class="text-brand-muted text-lg">Visualize the Invisible. Your daily biology, beautifully mapped.</p>
+                    </div>
+
+                    <div class="relative max-w-5xl mx-auto bg-black border border-brand-border rounded-3xl p-8 shadow-2xl">
+                        
+                        <div class="flex justify-between items-center mb-8 border-b border-brand-border pb-6">
+                            <div class="text-left">
+                                <div class="mono-label mb-1">Status</div>
+                                <div class="text-2xl font-bold text-brand-success">Optimal Flow</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="mono-label mb-1">Flow Score</div>
+                                <div class="text-3xl font-bold text-brand-gold">98</div>
+                            </div>
+                        </div>
+
+                        <div class="h-64 w-full bg-brand-card/30 rounded-xl mb-8 border border-brand-border p-4 relative overflow-hidden">
+                            <canvas id="mainChart"></canvas>
+                        </div>
+
+                        <div class="grid md:grid-cols-3 gap-6 pt-6 border-t border-brand-border/50">
+                            <div class="flex flex-col gap-2">
+                                <div class="flex items-center gap-2 text-white font-bold">
+                                    <i data-lucide="trending-up" class="w-4 h-4 text-brand-gold"></i>
+                                    Longitudinal Analysis
+                                </div>
+                                <p class="text-xs text-brand-muted leading-relaxed">Move beyond snapshots. Flow OS identifies multi-week trends in pH and specific gravity to predict stone formation risk before it happens.</p>
+                            </div>
+                            
+                            <div class="flex flex-col gap-2">
+                                <div class="flex items-center gap-2 text-white font-bold">
+                                    <i data-lucide="database" class="w-4 h-4 text-brand-accent"></i>
+                                    Raw Data Export
+                                </div>
+                                <p class="text-xs text-brand-muted leading-relaxed">Your data is yours. Export full JSON datasets or generate clinical PDF reports for your urologist or nephrologist.</p>
+                            </div>
+
+                            <div class="flex flex-col gap-2">
+                                <div class="flex items-center gap-2 text-white font-bold">
+                                    <i data-lucide="users" class="w-4 h-4 text-brand-success"></i>
+                                    Multi-User Profiles
+                                </div>
+                                <p class="text-xs text-brand-muted leading-relaxed">One device supports the whole family. Passive user identification separates data for partners, children, or aging parents.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="specs" class="py-32 px-6 bg-black border-t border-brand-border">
+                <div class="max-w-5xl mx-auto">
+                    <div class="text-center mb-16">
+                        <h2 class="text-4xl font-bold mb-4 text-white">Under the Hood</h2>
+                        <p class="text-brand-muted">Engineering precision meets biological chaos.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16">
+                        <div>
+                            <h3 class="text-lg font-bold mb-6 border-b border-brand-border pb-2 text-brand-gold uppercase tracking-widest">Sensor Fusion Array</h3>
+                            <ul class="text-sm text-brand-muted">
+                                <li class="flex justify-between items-center py-6 border-b border-white/5">
+                                    <span class="flex items-center gap-3 text-white text-base"><i data-lucide="eye" class="w-5 h-5 text-brand-accent"></i> Optical Spectrometry</span> 
+                                    <span class="text-right">AMS AS7265x 18-Ch<br><span class="text-xs opacity-50">UV-VIS-NIR Analysis</span></span>
+                                </li>
+                                <li class="flex justify-between items-center py-6 border-b border-white/5">
+                                    <span class="flex items-center gap-3 text-white text-base"><i data-lucide="wind" class="w-5 h-5 text-brand-danger"></i> Olfactory Gas</span> 
+                                    <span class="text-right">Bosch BME688 AI<br><span class="text-xs opacity-50">VOCs (Acetone/Methane)</span></span>
+                                </li>
+                                <li class="flex justify-between items-center py-6 border-b border-white/5">
+                                    <span class="flex items-center gap-3 text-white text-base"><i data-lucide="scan" class="w-5 h-5 text-brand-success"></i> Lidar ToF</span> 
+                                    <span class="text-right">ST VL53L5CX<br><span class="text-xs opacity-50">Flow Rate & Volume</span></span>
+                                </li>
+                            </ul>
+                            
+                        </div>
+
+                        <div>
+                            <h3 class="text-lg font-bold mb-6 border-b border-brand-border pb-2 text-brand-gold uppercase tracking-widest">System Specifications</h3>
+                            <ul class="text-xs font-mono text-brand-muted">
+                                <li class="flex justify-between py-2 border-b border-white/5"><span>Connectivity</span> <span class="text-white">Bluetooth 5.3 LE, Wi-Fi 6</span></li>
+                                <li class="flex justify-between py-2 border-b border-white/5"><span>Battery</span> <span class="text-white">2500mAh (3 Months)</span></li>
+                                <li class="flex justify-between py-2 border-b border-white/5"><span>Charging</span> <span class="text-white">Waterproof USB-C</span></li>
+                                <li class="flex justify-between py-2 border-b border-white/5"><span>Rating</span> <span class="text-white">IP68 (Submersible)</span></li>
+                                <li class="flex justify-between py-2 border-b border-white/5"><span>Processor</span> <span class="text-white">Dual-Core Cortex-M33</span></li>
+                                <li class="flex justify-between py-2 border-b border-white/5"><span>Encryption</span> <span class="text-white">AES-256 On-Device</span></li>
+                                <li class="flex justify-between py-2 border-b border-white/5"><span>Mount</span> <span class="text-white">Universal Rim-Clip</span></li>
+                                <li class="flex justify-between py-2 border-b border-white/5"><span>Privacy</span> <span class="text-brand-gold">Edge AI (No Cloud Raw Data)</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="buy" class="py-32 px-6 bg-brand-card text-center relative overflow-hidden">
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-brand-gold/5 blur-[120px] rounded-full pointer-events-none"></div>
+
+                <div class="max-w-3xl mx-auto relative z-10">
+                    <div class="inline-block mb-6">
+                        <span class="text-brand-gold text-sm font-bold uppercase tracking-widest">
+                            Production Batch 1
+                        </span>
+                    </div>
+                    
+                    <h2 class="text-5xl md:text-6xl font-bold mb-8 text-white">Secure Your Flow.</h2>
+                    
+                    <p class="text-brand-muted mb-12 max-w-xl mx-auto text-lg">
+                        Join the 87% of early adopters who have already reserved their unit. 
+                        Experience the clarity of total biological insight.
+                    </p>
+                    
+                    <div class="flex flex-col items-center gap-4">
+                        <button class="bg-brand-gold hover:bg-white text-black text-xl font-bold py-5 px-16 rounded-full transition-all transform hover:scale-105 shadow-[0_0_30px_rgba(200,170,110,0.25)]">
+                            Reserve Now — $100
+                        </button>
+                        <p class="mt-6 text-xs text-brand-muted">
+                            Fully refundable. Est. Retail Price $499. <br>
+                            <span class="text-brand-gold">Ships Q3 2026.</span>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="py-20 bg-black border-t border-brand-border">
                 <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
                     <div class="text-left">
-                        <p class="text-sm font-bold uppercase tracking-widest text-gray-500 mb-2">Engineered In</p>
+                        <p class="mono-label mb-2">Engineered In</p>
                         <p class="text-xl text-white font-semibold">San Francisco, CA</p>
                     </div>
-                    <div class="h-12 w-px bg-gray-800 hidden md:block"></div>
+                    <div class="h-12 w-px bg-brand-border hidden md:block"></div>
                     <div class="text-left">
-                        <p class="text-sm font-bold uppercase tracking-widest text-gray-500 mb-2">Data Privacy</p>
+                        <p class="mono-label mb-2">Data Privacy</p>
                         <p class="text-xl text-white font-semibold">Edge AI • No Cloud Raw Data</p>
                     </div>
-                    <div class="h-12 w-px bg-gray-800 hidden md:block"></div>
+                    <div class="h-12 w-px bg-brand-border hidden md:block"></div>
                     <div class="text-left">
-                        <p class="text-sm font-bold uppercase tracking-widest text-gray-500 mb-2">Waitlist</p>
+                        <p class="mono-label mb-2">Waitlist</p>
                         <p class="text-xl text-brand-gold font-semibold">12,400+ Joined</p>
                     </div>
                 </div>
             </section>
-
         </main>
-
-
-        <main id="specs" class="page-view hidden pt-32 px-6 max-w-5xl mx-auto">
-             <h1 class="text-5xl font-bold mb-4">Technical Specifications</h1>
-            <p class="text-xl text-gray-400 mb-16">Engineering precision meets biological chaos.</p>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16">
-                <div class="border-t border-gray-800 pt-6">
-                    <h3 class="text-xl font-semibold mb-4 text-brand-gold">Sensor Array</h3>
-                    <ul class="space-y-4 text-gray-400">
-                        <li class="flex justify-between"><span class="text-white">Optical</span> <span>AMS AS7265x 18-Channel Spectrometer (UV-VIS-NIR)</span></li>
-                        <li class="flex justify-between"><span class="text-white">Olfactory</span> <span>Bosch BME688 AI Gas Sensor (VOCs, eCO2)</span></li>
-                        <li class="flex justify-between"><span class="text-white">LIDAR</span> <span>ST VL53L5CX Time-of-Flight (8x8 Zone)</span></li>
-                        <li class="flex justify-between"><span class="text-white">Polarimetry</span> <span>Dual-layer linear polarization (Glucose detection)</span></li>
-                    </ul>
-                </div>
-                <div class="border-t border-gray-800 pt-6">
-                     <h3 class="text-xl font-semibold mb-4 text-brand-gold">Power & Connectivity</h3>
-                    <ul class="space-y-4 text-gray-400">
-                         <li class="flex justify-between"><span class="text-white">Battery</span> <span>2500mAh Li-Ion (3 Months/charge)</span></li>
-                         <li class="flex justify-between"><span class="text-white">Charging</span> <span>Waterproof USB-C Port</span></li>
-                         <li class="flex justify-between"><span class="text-white">Wireless</span> <span>Bluetooth 5.2 & WiFi 6</span></li>
-                    </ul>
-                </div>
-            </div>
-        </main>
-
-        <main id="dashboard" class="page-view hidden pt-24 px-6 bg-brand-card min-h-screen">
-             <div class="max-w-7xl mx-auto">
-                <div class="flex justify-between items-center mb-8">
-                    <div>
-                        <h1 class="text-2xl font-bold">Good Morning, Alex</h1>
-                        <p class="text-gray-400 text-sm">Today's Variance: <span class="text-green-400">+12% Improved</span></p>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                    
-                    <div class="bg-black border border-gray-800 rounded-2xl p-6 col-span-1 lg:col-span-1">
-                        <div class="flex justify-between items-start mb-4">
-                            <div class="text-gray-400 text-xs uppercase font-bold tracking-wider">Metabolism</div>
-                            <span class="bg-brand-gold/20 text-brand-gold text-xs px-2 py-1 rounded">Fat Burn Active</span>
-                        </div>
-                        <div class="text-4xl font-bold mb-2">1.8 <span class="text-lg text-gray-500">mmol/L</span></div>
-                        <p class="text-xs text-gray-400">Acetone detected in breath/urine vapor.</p>
-                    </div>
-
-                    <div class="bg-black border border-gray-800 rounded-2xl p-6 col-span-1 lg:col-span-1">
-                        <div class="flex justify-between items-start mb-4">
-                            <div class="text-gray-400 text-xs uppercase font-bold tracking-wider">Hydration</div>
-                            <span class="bg-blue-500/10 text-blue-500 text-xs px-2 py-1 rounded">Optimal</span>
-                        </div>
-                        <div class="text-4xl font-bold mb-2">1.010 <span class="text-lg text-gray-500">SG</span></div>
-                        <p class="text-xs text-gray-400">Specific Gravity is ideal.</p>
-                    </div>
-
-                    <div class="bg-black border border-gray-800 rounded-2xl p-6 col-span-1 lg:col-span-2">
-                        <div class="text-gray-400 text-xs uppercase font-bold tracking-wider mb-4">30-Day Metabolic Variance</div>
-                        <canvas id="metabolicChart" height="150"></canvas>
-                    </div>
-                </div>
-            </div>
-        </main>
-        
-        <main id="buy" class="page-view hidden pt-32 px-6 max-w-4xl mx-auto">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-                <div class="space-y-4">
-                    <img src="https://placehold.co/600x600/111111/333333?text=Flow+State+Device" class="rounded-xl border border-gray-800">
-                </div>
-                <div>
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-green-500/20 bg-green-500/10 mb-4">
-                        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                        <span class="text-green-500 text-xs font-bold tracking-widest uppercase">Batch 1 Available</span>
-                    </div>
-                    <h1 class="text-4xl font-bold mb-2">Flow State</h1>
-                    <div class="text-3xl font-bold mb-8">$399 <span class="text-base font-normal text-gray-500">or $35/mo</span></div>
-                    <button class="w-full bg-brand-gold hover:bg-brand-goldDim text-black font-bold py-4 rounded-lg mb-4 transition-colors">
-                        Pre-Order Now ($100 Deposit)
-                    </button>
-                    <p class="text-xs text-center text-gray-500">Free shipping worldwide. 30-day money back guarantee.</p>
-                </div>
-            </div>
-        </main>
-
     </div>
 
-    <footer class="border-t border-white/5 py-12 px-6 bg-brand-black">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between text-xs text-gray-500">
-            <p>&copy; 2026 Flow State Technologies.</p>
-            <div class="flex gap-6 mt-4 md:mt-0">
-                <a href="#" class="hover:text-white">Privacy</a>
-                <a href="#" class="hover:text-white">Terms</a>
-            </div>
-        </div>
+    <footer class="py-12 px-6 bg-black border-t border-brand-border text-xs text-brand-muted">
+       <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
+          <div class="col-span-1">
+             <div class="flex items-center gap-2 mb-4">
+                <div class="w-2 h-2 bg-brand-gold rounded-sm"></div>
+                <span class="font-bold text-white tracking-tight">FLOW STATE</span>
+             </div>
+             <p>&copy; 2026 Flow State Technologies Inc.</p>
+             <p class="mt-2">All rights reserved.</p>
+          </div>
+          <div class="col-span-1 md:col-span-2">
+             <strong class="text-white block mb-2">Regulatory Disclaimer</strong>
+             <p class="leading-relaxed opacity-80">
+                The Flow is a general wellness device. It is not intended to diagnose, treat, cure, or prevent any disease or medical condition. 
+                Any indicators regarding micro-hematuria, hydration, or ketones are for informational and educational purposes only. 
+                Always consult a physician for professional medical advice or before making significant lifestyle changes.
+             </p>
+          </div>
+          <div class="col-span-1 flex flex-col gap-3">
+             <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
+             <a href="#" class="hover:text-white transition-colors">Terms of Service</a>
+             <a href="#" class="hover:text-white transition-colors">Contact Support</a>
+             <a href="#" class="hover:text-white transition-colors">Press Kit</a>
+          </div>
+       </div>
     </footer>
 
     <script>
-        function router(pageId) {
-            // Hide all pages
-            document.querySelectorAll('.page-view').forEach(el => {
-                el.classList.add('hidden');
-                el.classList.remove('block');
-            });
-            // Show target
-            const target = document.getElementById(pageId);
-            target.classList.remove('hidden');
-            target.classList.add('block');
-            // Animate
-            target.classList.add('animate-fade-in-up');
-            window.scrollTo(0,0);
+        function scrollToId(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
         }
 
-        function scrollToId(id) {
-            document.getElementById(id).scrollIntoView({behavior: 'smooth'});
+        function switchView(viewId) {
+            // Placeholder for if we move back to multi-view
+            console.log("Navigating to:", viewId);
         }
 
         // Init Chart
-        document.addEventListener('DOMContentLoaded', function() {
-            const ctx = document.getElementById('metabolicChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
-                    datasets: [{
-                        label: 'Ketones',
-                        data: [0.5, 0.8, 1.2, 2.1, 1.8, 0.4, 0.2],
-                        borderColor: '#D4AF37',
-                        backgroundColor: 'rgba(212, 175, 55, 0.1)',
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: { display: false },
-                        y: { display: false }
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            const ctx = document.getElementById('mainChart');
+            if(ctx) {
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
+                        datasets: [{
+                            data: [0.8, 1.2, 1.5, 2.1, 1.9, 1.2, 0.9],
+                            borderColor: '#C8AA6E',
+                            borderWidth: 2,
+                            backgroundColor: (context) => {
+                                const ctx = context.chart.ctx;
+                                const gradient = ctx.createLinearGradient(0, 0, 0, 200);
+                                gradient.addColorStop(0, 'rgba(200, 170, 110, 0.2)');
+                                gradient.addColorStop(1, 'rgba(200, 170, 110, 0)');
+                                return gradient;
+                            },
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 0,
+                            pointHoverRadius: 6
+                        }]
                     },
-                    elements: { point: { radius: 0 } }
-                }
-            });
-        });
-    </script>
-
-<script>
-        // Intersection Observer for Fade-in Animations
-        const observerOptions = {
-            root: null,
-            rootMargin: '0px',
-            threshold: 0.1
-        };
-
-        const observer = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('is-visible');
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, observerOptions);
-
-        document.querySelectorAll('.fade-in-section').forEach(section => {
-            observer.observe(section);
-        });
-
-        // Initialize Lucide Icons
-        lucide.createIcons();
-
-        // Chart.js Configuration
-        const ctx = document.getElementById('mainChart').getContext('2d');
-        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-        gradient.addColorStop(0, 'rgba(212, 175, 55, 0.2)');
-        gradient.addColorStop(1, 'rgba(212, 175, 55, 0)');
-
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['6AM', '9AM', '12PM', '3PM', '6PM', '9PM'],
-                datasets: [{
-                    label: 'Hydration Level',
-                    data: [85, 92, 96, 88, 95, 90],
-                    borderColor: '#D4AF37',
-                    backgroundColor: gradient,
-                    borderWidth: 3,
-                    tension: 0.4,
-                    fill: true,
-                    pointBackgroundColor: '#000',
-                    pointBorderColor: '#D4AF37',
-                    pointBorderWidth: 2,
-                    pointRadius: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        backgroundColor: '#1F1F1F',
-                        titleColor: '#F5F5F7',
-                        bodyColor: '#D4AF37',
-                        borderColor: '#333',
-                        borderWidth: 1
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { grid: { display: false, drawBorder: false }, ticks: { display: false } },
+                            y: { grid: { color: '#333', borderDash: [5, 5] }, ticks: { display: false } }
+                        }
                     }
-                },
-                scales: {
-                    x: {
-                        grid: { display: false, drawBorder: false },
-                        ticks: { color: '#666' }
-                    },
-                    y: {
-                        display: false,
-                        min: 50
-                    }
-                }
+                });
             }
         });
     </script>
