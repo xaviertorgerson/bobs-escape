@@ -1,661 +1,369 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FlowState | The Passive Bio-Audit</title>
-    
+    <title>ProLink // Davis Master Bath</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        bg: { DEFAULT: '#050505', card: '#0A0A0A', border: '#1A1A1A', input: '#111111' },
-                        brand: { 
-                            gold: '#C8AA6E', 
-                            dim: '#6B5A3A', 
-                            text: '#E5E5E5', 
-                            muted: '#737373', 
-                            accent: '#3B82F6', 
-                            success: '#10B981', 
-                            danger: '#EF4444' 
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace']
-                    },
-                    backgroundImage: {
-                        'grid-pattern': "linear-gradient(to right, #1a1a1a 1px, transparent 1px), linear-gradient(to bottom, #1a1a1a 1px, transparent 1px)"
-                    },
-                    animation: {
-                        'fade-in': 'fadeIn 0.5s ease-out forwards',
-                    },
-                    keyframes: {
-                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } }
-                    }
-                }
-            }
-        }
-    </script>
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { background-color: #050505; color: #E5E5E5; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+        :root { --pro-orange: #FF5722; --pro-carbon: #1A1A1B; --pro-blue: #2A4494; }
+        body { font-family: 'Inter', sans-serif; background: #F4F4F2; color: var(--pro-carbon); overflow-x: hidden; }
+        .mono { font-family: 'IBM Plex Mono', monospace; }
         
-        /* Glass Nav */
-        .glass-nav { background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .grid-bg { background-size: 40px 40px; mask-image: linear-gradient(to bottom, black 40%, transparent 100%); }
+        .pro-card { background: white; border: 2px solid var(--pro-carbon); box-shadow: 6px 6px 0px var(--pro-carbon); position: relative; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .grid-bg { background-image: radial-gradient(#d1d1d1 0.8px, transparent 0.8px); background-size: 24px 24px; }
         
-        /* Cards & Interactions */
-        .bento-card { 
-            background: #0A0A0A; border: 1px solid #1A1A1A; transition: all 0.3s ease; 
-            position: relative; overflow: hidden;
-        }
-        .bento-card:hover { border-color: rgba(200, 170, 110, 0.3); transform: translateY(-2px); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5); }
+        .view-pane { display: none; animation: fadeIn 0.3s ease-out; }
+        .view-pane.active { display: block; }
+        
+        .btn-main { background: var(--pro-orange); color: white; font-weight: 900; text-transform: uppercase; border: 2px solid var(--pro-carbon); box-shadow: 4px 4px 0px var(--pro-carbon); transition: 0.1s; cursor: pointer; text-align: center; width: 100%; display: block; }
+        .btn-main:active { transform: translate(2px, 2px); box-shadow: 0px 0px 0px var(--pro-carbon); }
+        
+        /* Badges */
+        .status-badge { font-family: 'IBM Plex Mono'; font-weight: 700; font-size: 10px; border: 2px solid; padding: 4px 10px; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; }
+        .badge-proposal { background: #F3F4F6; color: #374151; border-color: #374151; }
+        .badge-progress { background: #DBEAFE; color: #1E40AF; border-color: #1E40AF; }
+        .badge-complete { background: #DCFCE7; color: #166534; border-color: #166534; }
 
-        /* Typography */
-        h1, h2, h3 { letter-spacing: -0.03em; }
-        .mono-label { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #737373; }
-        
-        /* View Router */
-        .view-section { display: none; opacity: 0; min-height: 100vh; padding-top: 80px; }
-        .view-section.active { display: block; animation: fadeIn 0.4s ease-out forwards; }
+        /* Timeline */
+        .timeline-container { position: relative; padding-left: 24px; }
+        .timeline-line { position: absolute; left: 7px; top: 0; bottom: 0; width: 2px; background: var(--pro-carbon); opacity: 0.1; }
+        .timeline-item { position: relative; padding-bottom: 32px; animation: fadeIn 0.5s ease-out forwards; }
+        .timeline-dot { position: absolute; left: -21px; top: 4px; width: 12px; height: 12px; background: white; border: 2px solid var(--pro-carbon); border-radius: 50%; z-index: 10; }
+        .dot-action { background: #22C55E; border-color: #166534; }
+        .dot-photo { background: var(--pro-carbon); }
+        .dot-msg { background: #3B82F6; border-color: #1E40AF; }
 
-        /* Placeholder Styles */
-        .img-placeholder {
-            background-image: repeating-linear-gradient(45deg, #111 0, #111 10px, #161616 10px, #161616 20px);
-            border: 1px dashed #333;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #555;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-        }
+        .secure-tooltip { background: #F8FAFC; border: 1px solid #E2E8F0; padding: 12px; border-radius: 4px; display: flex; gap: 10px; }
+        
+        /* Animations */
+        .teleport-out { transform: scale(0.9) translateY(20px); opacity: 0; pointer-events: none; }
+        .log-entry-approved { border-left: 6px solid #22C55E !important; animation: slideIn 0.4s ease-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
+<body class="grid-bg pb-40">
 
-<body class="selection:bg-brand-gold selection:text-black">
-
-    <nav class="fixed w-full z-50 glass-nav top-0">
-        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-3 cursor-pointer group" onclick="switchView('home')">
-                <div class="w-2 h-2 bg-brand-gold rounded-sm group-hover:animate-pulse"></div>
-                <span class="font-semibold tracking-tight text-sm">FLOW<span class="text-brand-muted">STATE</span></span>
+    <nav class="bg-white border-b-2 border-black p-4 sticky top-0 z-50">
+        <div class="max-w-md mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <span class="font-black text-xl italic uppercase tracking-tighter">ProLink</span>
+                <span class="text-gray-300 font-light text-xl">//</span>
+                <span class="font-bold text-[10px] uppercase tracking-widest text-[#FF5722] mt-1">Davis Master Bath</span>
             </div>
-            
-            <div class="hidden md:flex gap-8 text-xs font-medium text-brand-muted">
-                <button onclick="switchView('home')" class="hover:text-white transition-colors">The Flow</button>
-                <button onclick="switchView('home'); setTimeout(() => scrollToId('visualize'), 100);" class="hover:text-white transition-colors">Software</button>
-                <button onclick="switchView('home'); setTimeout(() => scrollToId('specs'), 100);" class="hover:text-white transition-colors">Technology</button>
-            </div>
-
-            <button onclick="switchView('checkout')" class="text-xs font-mono border border-brand-border bg-white/5 hover:bg-white/10 px-4 py-2 rounded transition-colors text-brand-gold tracking-wide">
-                RESERVE BATCH 1
-            </button>
+            <div id="master-status" class="status-badge badge-proposal">PROPOSAL</div>
         </div>
     </nav>
 
-    <div id="app">
+    <main class="max-w-md mx-auto p-4 space-y-8">
 
-        <main id="home" class="view-section active">
+        <div id="view-bid" class="view-pane active space-y-6">
+            <header><h2 class="text-4xl font-black italic uppercase tracking-tighter leading-none">123 Holland Road</h2></header>
+
+            <div class="pro-card p-5 border-l-[12px] border-black flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80" class="w-14 h-14 border-2 border-black object-cover grayscale">
+                    <div>
+                        <h3 class="font-black text-sm uppercase italic leading-none">Sorrenson Tile</h3>
+                        <p class="text-[9px] mono text-gray-500 font-bold uppercase mt-1">Mike Sorrenson • LIC #99281-B</p>
+                    </div>
+                </div>
+                <div class="status-badge bg-green-50 text-green-700 border-green-700">VERIFIED ✓</div>
+            </div>
+
+            <div class="pro-card p-6 space-y-6">
+                <h3 class="mono text-[11px] font-black text-gray-400 uppercase tracking-widest border-b-2 border-dashed pb-2">Itemized Proposal</h3>
+                <div class="space-y-6">
+                    <div>
+                        <div class="flex justify-between font-black text-xs uppercase mb-1"><span>Waterproofing System</span><span>$1,850</span></div>
+                        <p class="text-[10px] text-gray-500 leading-tight italic">Demo of existing pan, installation of Kerdi-Board system and flood test.</p>
+                    </div>
+                    <div>
+                        <div class="flex justify-between font-black text-xs uppercase mb-1"><span>Main Floor & Wall Tile</span><span>$2,400</span></div>
+                        <p class="text-[10px] text-gray-500 leading-tight italic">Precision install of 12x24 Porcelain with 1/16" grout lines.</p>
+                    </div>
+                    <div>
+                        <div class="flex justify-between font-black text-xs uppercase mb-1"><span>Logistics & Protection</span><span>$450</span></div>
+                        <p class="text-[10px] text-gray-500 leading-tight italic">Dust mitigation, floor masking, and commercial disposal fees.</p>
+                    </div>
+                </div>
+                <div class="bg-black text-white p-5 flex justify-between items-center shadow-[6px_6px_0px_#FF5722]">
+                    <span class="mono text-[10px] font-bold uppercase italic tracking-widest">Total Investment</span>
+                    <span class="text-3xl font-black italic">$4,700.00</span>
+                </div>
+                <button onclick="navigate('view-contract')" class="btn-main py-5 text-sm">Review & Sign Agreement</button>
+            </div>
+        </div>
+
+        <div id="view-contract" class="view-pane space-y-6">
+            <div class="pro-card p-6">
+                <h2 class="font-black text-2xl italic uppercase mb-6 tracking-tighter">Fixed-Price Agreement</h2>
+                <div class="bg-gray-50 border-2 border-black p-4 h-48 overflow-y-auto mb-6 text-[11px] font-bold leading-relaxed border-dashed">
+                    <p class="mb-3">1. PERFORMANCE: Work performed according to TCNA standards.</p>
+                    <p class="mb-3">2. MILESTONE PAYMENTS: Funds securely vaulted. Released to contractor solely upon photo-proof validation by homeowner.</p>
+                    <p class="mb-3">3. MODIFICATIONS: Change orders required for any scope adjustments. Must be signed via ProLink.</p>
+                    <p>4. WARRANTY: 1-Year limited workmanship warranty begins upon final ledger clearance.</p>
+                </div>
+                <div class="space-y-4">
+                    <input type="text" placeholder="NAME ON CARD" class="border-2 border-black p-3 w-full mono text-xs uppercase outline-none focus:border-[#FF5722]">
+                    <div class="flex gap-2">
+                        <input type="text" placeholder="CARD NUMBER" class="border-2 border-black p-3 w-[70%] mono text-xs outline-none focus:border-[#FF5722]">
+                        <input type="text" placeholder="CVC" class="border-2 border-black p-3 w-[30%] mono text-xs outline-none focus:border-[#FF5722]">
+                    </div>
+                    <div class="secure-tooltip mt-4">
+                        <span class="text-blue-500 text-lg leading-none">🛡️</span>
+                        <p class="text-[10px] text-slate-500 font-medium leading-tight"><strong>AUTHORIZATION ONLY:</strong> A temporary hold is placed for the project value. Funds remain in your control and do not transfer until you explicitly approve timeline milestones.</p>
+                    </div>
+                </div>
+                <button onclick="navigate('view-heartbeat')" class="btn-main py-5 text-sm mt-8">Sign and Authorize Hold</button>
+            </div>
+        </div>
+
+        <div id="view-heartbeat" class="view-pane space-y-8">
             
-            <section class="relative pt-20 pb-32 flex flex-col items-center justify-center min-h-[90vh] overflow-hidden">
-                <canvas id="flowCanvas" class="absolute inset-0 w-full h-full opacity-40 pointer-events-none" style="mix-blend-mode: screen;"></canvas>
-                <div class="absolute inset-0 bg-gradient-to-b from-transparent via-bg/90 to-bg pointer-events-none"></div>
+            <section id="action-zone" class="space-y-4">
+                <h2 class="mono text-[11px] font-bold text-gray-500 uppercase tracking-widest px-1">Action Required</h2>
                 
-                <div class="max-w-4xl mx-auto px-6 text-center z-10 relative">
-                    <div class="inline-flex items-center gap-2 mb-8 border border-brand-border px-3 py-1 rounded-full bg-bg/80 backdrop-blur-md animate-fade-in">
-                        <span class="relative flex h-2 w-2">
-                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-gold opacity-75"></span>
-                          <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-gold"></span>
-                        </span>
-                        <span class="mono-label !text-[10px] !text-brand-gold">Batch 1: 87% Reserved</span>
-                    </div>
-
-                    <h1 class="text-6xl md:text-8xl font-bold mb-8 leading-[1.05] text-white animate-fade-in" style="animation-delay: 0.1s;">
-                        The Flow. <br>
-                        <span class="text-brand-muted">Clinical urinalysis. Every day.</span>
-                    </h1>
-
-                    <p class="text-xl text-brand-muted max-w-2xl mx-auto mb-12 leading-relaxed animate-fade-in" style="animation-delay: 0.2s;">
-                        A <strong>rim-mounted sensor system</strong> that passively tracks hydration, electrolytes, ketones, and kidney function. No strips. No behavior change.
-                    </p>
-
-                    <div class="flex flex-col sm:flex-row justify-center gap-4 animate-fade-in" style="animation-delay: 0.3s;">
-                        <button onclick="switchView('checkout')" class="bg-brand-gold hover:bg-brand-dim text-black font-bold text-sm px-10 py-4 rounded-full transition-all hover:scale-105 shadow-[0_0_30px_rgba(200,170,110,0.2)]">
-                            Secure Flow
-                        </button>
-                        <button onclick="scrollToId('overview')" class="text-brand-text hover:text-brand-gold font-medium text-sm px-8 py-4 flex items-center gap-2 transition-colors">
-                            How it works <i data-lucide="arrow-down" class="w-4 h-4"></i>
-                        </button>
-                    </div>
-
-                    <div class="mt-20 w-full max-w-3xl mx-auto aspect-[16/9] img-placeholder rounded-2xl animate-fade-in" style="animation-delay: 0.4s;">
-                        [ RENDER: THE MONOLITH - Sleek Rim-Mounted Sensor ]
-                    </div>
-                </div>
-            </section>
-
-            <section id="overview" class="py-32 px-6 bg-brand-card border-t border-brand-border">
-                <div class="max-w-7xl mx-auto">
-                    <h2 class="text-4xl md:text-5xl font-bold mb-16 text-center text-white">Your body is talking. <br><span class="text-brand-muted">Start listening.</span></h2>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 grid-rows-2 gap-6 h-auto md:h-[800px]">
-                        
-                        <div class="bento-card md:col-span-2 md:row-span-1 p-8 md:p-12 flex flex-col justify-between group cursor-pointer" onclick="switchView('technology')">
-                            <div class="z-10">
-                                <div class="flex items-center gap-2 mb-4">
-                                    <i data-lucide="droplet" class="text-brand-accent w-5 h-5"></i>
-                                    <span class="mono-label !text-brand-accent">Precision Hydration</span>
-                                </div>
-                                <h3 class="text-3xl font-bold mb-2 text-white">Beyond 8 Glasses.</h3>
-                                <p class="text-brand-muted max-w-md">Optical spectrometry measures the specific gravity (SG) of your stream. Know exactly when to hydrate, and when you are just flushing water.</p>
-                            </div>
-                            <div class="absolute right-0 bottom-0 w-1/2 h-full bg-gradient-to-l from-brand-accent/5 to-transparent"></div>
-                            <div class="absolute bottom-8 right-8 text-right">
-                                <div class="text-5xl font-bold text-brand-accent">1.015</div>
-                                <div class="mono-label !text-brand-accent/70 mt-1">Optimal SG</div>
-                            </div>
-                        </div>
-
-                        <div class="bento-card md:col-span-1 md:row-span-2 p-8 flex flex-col relative group cursor-pointer" onclick="switchView('technology')">
-                            <div class="z-10">
-                                <div class="flex items-center gap-2 mb-4">
-                                    <i data-lucide="zap" class="text-brand-gold w-5 h-5"></i>
-                                    <span class="mono-label !text-brand-gold">Electrolytes</span>
-                                </div>
-                                <h3 class="text-3xl font-bold mb-4 text-white">Salt Wasting.</h3>
-                                <p class="text-brand-muted text-sm mb-8">
-                                    Optimization requires balance. Are you retaining sodium or flushing it? Our capacitive sensors detect electrolyte density to ensure stamina.
-                                </p>
-                            </div>
-                            
-                            <div class="mt-auto space-y-4">
-                                <div>
-                                    <div class="flex justify-between text-xs text-brand-muted mb-1"><span>Sodium</span><span class="text-brand-danger">Low</span></div>
-                                    <div class="w-full h-1.5 bg-bg/50 rounded-full overflow-hidden"><div class="h-full bg-brand-danger w-[30%]"></div></div>
-                                </div>
-                                <div>
-                                    <div class="flex justify-between text-xs text-brand-muted mb-1"><span>Potassium</span><span class="text-brand-gold">Optimal</span></div>
-                                    <div class="w-full h-1.5 bg-bg/50 rounded-full overflow-hidden"><div class="h-full bg-brand-gold w-[85%]"></div></div>
-                                </div>
-                                <div>
-                                    <div class="flex justify-between text-xs text-brand-muted mb-1"><span>Magnesium</span><span class="text-brand-gold">Optimal</span></div>
-                                    <div class="w-full h-1.5 bg-bg/50 rounded-full overflow-hidden"><div class="h-full bg-brand-gold w-[70%]"></div></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="bento-card md:col-span-1 p-8 cursor-pointer" onclick="switchView('technology')">
-                             <div class="flex items-center gap-2 mb-4">
-                                <i data-lucide="wind" class="text-brand-success w-5 h-5"></i>
-                                <span class="mono-label !text-brand-success">Microbiome</span>
-                            </div>
-                            <h3 class="text-2xl font-bold mb-2 text-white">Gas Signatures.</h3>
-                            <p class="text-brand-muted text-sm">AI analysis of methane and hydrogen sulfide detects gut fermentation and food intolerances instantly.</p>
-                        </div>
-
-                        <div class="bento-card md:col-span-1 p-8 cursor-pointer" onclick="switchView('technology')">
-                             <div class="flex items-center gap-2 mb-4">
-                                <i data-lucide="flame" class="text-brand-danger w-5 h-5"></i>
-                                <span class="mono-label !text-brand-danger">Fuel Source</span>
-                            </div>
-                            <h3 class="text-2xl font-bold mb-2 text-white">Real-Time Ketones.</h3>
-                            <p class="text-brand-muted text-sm">Validate your fasting state. Detect acetone vapor to confirm fat adaptation without finger pricks.</p>
-                        </div>
-
-                    </div>
-                </div>
-            </section>
-
-            <section id="health" class="py-32 bg-bg border-y border-brand-border">
-                <div class="max-w-4xl mx-auto px-6 text-center">
-                    <h2 class="text-4xl md:text-5xl font-bold mb-6 text-white">A Guardian on the Rim.</h2>
-                    <p class="text-xl text-brand-muted mb-16 max-w-2xl mx-auto">
-                        Flow State establishes your biological baseline. When deviations occur, you know first.
-                    </p>
-
-                    <div class="grid md:grid-cols-2 gap-8 text-left">
-                        <div class="p-8 rounded-2xl border border-brand-border bg-brand-card/50 flex items-start gap-5 hover:border-brand-danger/30 transition-colors">
-                            <div class="p-3 bg-brand-danger/10 rounded-full text-brand-danger">
-                                <i data-lucide="shield-alert" class="w-6 h-6"></i>
-                            </div>
-                            <div>
-                                <h4 class="text-lg font-bold text-white mb-2">Kidney Health</h4>
-                                <p class="text-sm text-brand-muted leading-relaxed">Detection of micro-hematuria (invisible blood) or high protein levels often precede stones or infection.</p>
-                            </div>
-                        </div>
-                        <div class="p-8 rounded-2xl border border-brand-border bg-brand-card/50 flex items-start gap-5 hover:border-brand-accent/30 transition-colors">
-                            <div class="p-3 bg-brand-accent/10 rounded-full text-brand-accent">
-                                <i data-lucide="activity" class="w-6 h-6"></i>
-                            </div>
-                            <div>
-                                <h4 class="text-lg font-bold text-white mb-2">UTI Detection</h4>
-                                <p class="text-sm text-brand-muted leading-relaxed">Ammonia spikes and leukocyte esterase proxies provide early warning for urinary tract issues.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="visualize" class="py-32 px-6 bg-gradient-to-b from-brand-card to-bg">
-                <div class="max-w-7xl mx-auto text-center">
-                    <h2 class="text-4xl md:text-5xl font-bold mb-8 text-white">Visualize the Invisible.</h2>
-                    <p class="text-lg text-brand-muted mb-12">Your daily biology, beautifully mapped.</p>
+                <div id="card-payment" class="pro-card p-5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-[#FF5722] text-white px-3 py-1 mono text-[10px] font-bold italic shadow-sm">SQUARE SECURE</div>
+                    <h3 class="font-black text-xl mb-1 italic uppercase">Release Milestone Funds</h3>
+                    <p class="text-xs text-gray-500 mb-4 font-bold italic">Phase 1: Waterproofing & Inspection</p>
                     
-                    <div class="relative max-w-5xl mx-auto bg-bg border border-brand-border rounded-3xl p-8 shadow-2xl">
-                        <div class="flex justify-between items-center mb-8 border-b border-brand-border pb-6">
-                            <div class="text-left">
-                                <div class="mono-label mb-1">Status</div>
-                                <div class="text-2xl font-bold text-brand-success">Optimal Flow</div>
-                            </div>
-                            <div class="text-right">
-                                <div class="mono-label mb-1">Flow Score</div>
-                                <div class="text-3xl font-bold text-brand-gold">98</div>
-                            </div>
-                        </div>
-
-                        <div class="h-64 w-full bg-brand-card/30 rounded-xl mb-8 border border-brand-border p-4 relative overflow-hidden">
-                            <canvas id="mainChart"></canvas>
-                        </div>
-
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 pt-4 border-b border-brand-border/50 pb-8 mb-8">
-                            <div class="text-left">
-                                <div class="mono-label mb-1">Ketones</div>
-                                <div class="text-xl font-bold text-white">1.8 <span class="text-sm text-brand-muted">mM</span></div>
-                            </div>
-                            <div class="text-left">
-                                <div class="mono-label mb-1">Hydration</div>
-                                <div class="text-xl font-bold text-brand-accent">96%</div>
-                            </div>
-                            <div class="text-left">
-                                <div class="mono-label mb-1">pH Balance</div>
-                                <div class="text-xl font-bold text-white">6.5</div>
-                            </div>
-                            <div class="text-left">
-                                <div class="mono-label mb-1">Electrolytes</div>
-                                <div class="text-xl font-bold text-brand-gold">Balanced</div>
-                            </div>
-                        </div>
-
-                        <div class="grid md:grid-cols-3 gap-6 text-left">
-                            <div class="flex flex-col gap-2">
-                                <div class="flex items-center gap-2 text-white font-bold text-sm">
-                                    <i data-lucide="trending-up" class="w-4 h-4 text-brand-gold"></i>
-                                    Longitudinal Analysis
-                                </div>
-                                <p class="text-xs text-brand-muted leading-relaxed">Flow OS identifies multi-week trends in pH and specific gravity to predict stone formation risk.</p>
-                            </div>
-                            <div class="flex flex-col gap-2">
-                                <div class="flex items-center gap-2 text-white font-bold text-sm">
-                                    <i data-lucide="file-text" class="w-4 h-4 text-brand-accent"></i>
-                                    Clinical Export
-                                </div>
-                                <p class="text-xs text-brand-muted leading-relaxed">Generate PDF reports of your biometrics to share with your urologist or nephrologist.</p>
-                            </div>
-                            <div class="flex flex-col gap-2">
-                                <div class="flex items-center gap-2 text-white font-bold text-sm">
-                                    <i data-lucide="users" class="w-4 h-4 text-brand-success"></i>
-                                    Family Mode
-                                </div>
-                                <p class="text-xs text-brand-muted leading-relaxed">Multi-user support with passive identification separates data for partners or aging parents.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="specs" class="py-32 px-6 bg-bg border-t border-brand-border">
-                <div class="max-w-5xl mx-auto">
-                    <div class="text-center mb-16">
-                        <h2 class="text-4xl font-bold mb-4 text-white">Under the Hood of Flow One</h2>
-                        <p class="text-brand-muted">Engineering precision meets biological chaos.</p>
-                    </div>
-
-                    <div class="w-full aspect-[2/1] img-placeholder rounded-2xl mb-24">
-                        [ RENDER: EXPLODED VIEW - Sensor Fusion Array & Hydrophobic Channel ]
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16">
+                    <div class="flex items-center justify-between mb-4 bg-gray-50 p-4 border border-dashed border-gray-300">
                         <div>
-                            <h3 class="text-lg font-bold mb-6 border-b border-brand-border pb-2 text-brand-gold uppercase tracking-widest">Sensor Fusion Array</h3>
-                            <ul class="text-sm text-brand-muted">
-                                <li class="flex justify-between items-center py-6 border-b border-brand-border">
-                                    <span class="flex items-center gap-2 text-white"><i data-lucide="eye" class="w-4 h-4 text-brand-accent"></i> Optical Spectrometry</span> 
-                                    <span class="text-right">AMS AS7265x 18-Ch<br><span class="text-xs text-brand-muted">UV-VIS-NIR Analysis</span></span>
-                                </li>
-                                <li class="flex justify-between items-center py-6 border-b border-brand-border">
-                                    <span class="flex items-center gap-2 text-white"><i data-lucide="wind" class="w-4 h-4 text-brand-danger"></i> Olfactory AI</span> 
-                                    <span class="text-right">Bosch BME688<br><span class="text-xs text-brand-muted">VOCs (Acetone, Methane)</span></span>
-                                </li>
-                                <li class="flex justify-between items-center py-6 border-b border-brand-border">
-                                    <span class="flex items-center gap-2 text-white"><i data-lucide="scan" class="w-4 h-4 text-brand-success"></i> Lidar ToF</span> 
-                                    <span class="text-right">ST VL53L5CX<br><span class="text-xs text-brand-muted">Flow Rate & Volume</span></span>
-                                </li>
-                            </ul>
+                            <p class="text-[10px] mono text-gray-400 uppercase">Amount to Release</p>
+                            <p class="text-2xl font-black">$1,850.00</p>
                         </div>
-
-                        <div>
-                            <h3 class="text-lg font-bold mb-6 border-b border-brand-border pb-2 text-brand-gold uppercase tracking-widest">Hardware Specs</h3>
-                            <ul class="text-xs font-mono text-brand-muted space-y-0">
-                                <li class="flex justify-between py-3 border-b border-white/5"><span>Connectivity</span> <span class="text-white">Bluetooth 5.3 LE, Wi-Fi 6</span></li>
-                                <li class="flex justify-between py-3 border-b border-white/5"><span>Battery Life</span> <span class="text-white">3 Months (Rechargeable)</span></li>
-                                <li class="flex justify-between py-3 border-b border-white/5"><span>Charging</span> <span class="text-white">Waterproof USB-C</span></li>
-                                <li class="flex justify-between py-3 border-b border-white/5"><span>Waterproofing</span> <span class="text-white">IP68 Rated (Submersible)</span></li>
-                                <li class="flex justify-between py-3 border-b border-white/5"><span>Privacy</span> <span class="text-brand-gold">On-Device Edge AI Processing</span></li>
-                                <li class="flex justify-between py-3 border-b border-white/5"><span>Processor</span> <span class="text-white">Dual-Core Cortex-M33</span></li>
-                                <li class="flex justify-between py-3 border-b border-white/5"><span>Mounting</span> <span class="text-white">Universal Rim-Clip</span></li>
-                            </ul>
+                        <div class="text-right">
+                            <p class="text-[10px] mono text-gray-400 uppercase tracking-tighter">Auth-Hold Status</p>
+                            <p class="text-[10px] font-bold text-green-600 uppercase">Vaulted ✓</p>
                         </div>
                     </div>
+                    
+                    <div class="flex items-start gap-3 bg-blue-50 p-3 border border-blue-200 mb-4">
+                        <span class="text-blue-900 font-bold leading-none">ⓘ</span>
+                        <p class="text-[10px] text-blue-900 leading-tight"><strong>Sign-Off:</strong> Mike verified the flood test on 2/20. Release now authorized.</p>
+                    </div>
+
+                    <button onclick="approveItem('card-payment', 'Payment Released: Phase 1', '$1,850.00')" class="btn-main py-4 text-sm">Release Funds & Confirm</button>
+                </div>
+
+                <div id="card-change-order" class="pro-card p-4 flex justify-between items-center bg-amber-50 border-amber-400 shadow-[4px_4px_0px_#2A4494]">
+                    <div class="max-w-[70%]">
+                        <h4 class="font-black text-xs uppercase tracking-tight">Pending Change Order #03</h4>
+                        <p class="text-[10px] text-gray-600 leading-tight font-bold">Custom niche tile upgrade (+ $180.00)</p>
+                    </div>
+                    <button onclick="approveItem('card-change-order', 'Change Order #03 Approved', '+$180.00')" class="bg-black text-white px-5 py-2 text-[10px] font-black uppercase active:scale-95 transition">Sign</button>
                 </div>
             </section>
 
-            <section class="py-32 px-6 bg-brand-card text-center relative overflow-hidden">
-                <div class="max-w-3xl mx-auto relative z-10">
-                    <div class="inline-block mb-6">
-                        <span class="text-brand-gold text-sm font-bold uppercase tracking-widest">
-                            Production Batch 1
-                        </span>
+            <section class="space-y-4">
+                <div class="flex justify-between items-end px-1">
+                    <h2 class="mono text-[11px] font-bold text-gray-500 uppercase tracking-widest">Project Heartbeat</h2>
+                </div>
+                
+                <div class="pro-card p-4 bg-gray-50 flex justify-between items-center border-dashed">
+                    <div class="flex gap-3 items-center">
+                        <span class="text-xl">📅</span>
+                        <p class="text-[10px] font-black uppercase italic tracking-tighter">Next Arrival: Tomorrow @ 8:15 AM</p>
                     </div>
-                    
-                    <h2 class="text-5xl md:text-6xl font-bold mb-8 text-white">Secure Your Flow.</h2>
-                    
-                    <p class="text-brand-muted mb-12 max-w-xl mx-auto">
-                        Join the 87% of early adopters who have already reserved their unit. 
-                    </p>
-                    
-                    <div class="flex flex-col items-center gap-4">
-                        <button onclick="switchView('checkout')" class="bg-brand-gold hover:bg-brand-dim text-black text-xl font-bold py-5 px-16 rounded-full transition-all hover:scale-105 shadow-[0_0_30px_rgba(200,170,110,0.2)]">
-                            Secure Flow
-                        </button>
-                        <p class="mt-6 text-xs text-brand-muted">
-                            Fully refundable. Est. Retail Price $499. <br>
-                            <span class="text-brand-gold">Ships Q3 2026.</span>
-                        </p>
+                </div>
+
+                <div class="timeline-container mt-6">
+                    <div class="timeline-line"></div>
+                    <div id="dynamic-log"></div> <div class="timeline-item">
+                        <div class="timeline-dot dot-photo"></div>
+                        <p class="mono text-[10px] text-gray-400 uppercase mb-2">Today @ 1:08 PM — PROOF OF WORK</p>
+                        <div class="pro-card overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1589939705384-5185138a047a?auto=format&fit=crop&w=600&q=80" class="w-full h-40 object-cover grayscale">
+                            <div class="p-3 bg-white">
+                                <p class="text-xs font-bold uppercase italic tracking-tighter">Verified Install: Kerdi-Board</p>
+                                <p class="text-[10px] text-gray-500 font-bold">Captured at 123 Holland Rd. (Lat/Long Verified)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot dot-msg"></div>
+                        <p class="mono text-[10px] text-gray-400 uppercase mb-2">Yesterday @ 4:30 PM — MESSAGE LOG</p>
+                        <div class="bg-black text-white p-4 shadow-[4px_4px_0px_#CCC] text-xs italic leading-relaxed font-bold">
+                            "Flood test is holding perfectly. City inspector confirmed for tomorrow morning. Ready for your review in the app." — Mike
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot dot-photo"></div>
+                        <p class="mono text-[10px] text-gray-400 uppercase mb-2">Feb 18 @ 9:15 AM — PROOF OF WORK</p>
+                        <div class="pro-card overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1504307651254-35680f356f67?auto=format&fit=crop&w=600&q=80" class="w-full h-32 object-cover grayscale opacity-80">
+                            <div class="p-3 bg-gray-50">
+                                <p class="text-xs font-bold uppercase italic tracking-tighter">Phase 0: Demo Complete</p>
+                                <p class="text-[10px] text-gray-500 font-bold">Old pan removed. Slab prepped.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
+        </div>
 
-            <section class="py-20 bg-bg border-y border-brand-border">
-                <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
-                    <div class="text-left">
-                        <p class="mono-label mb-2">Engineered In</p>
-                        <p class="text-xl text-white font-semibold">San Francisco, CA</p>
-                    </div>
-                    <div class="h-12 w-px bg-brand-border hidden md:block"></div>
-                    <div class="text-left">
-                        <p class="mono-label mb-2">Data Privacy</p>
-                        <p class="text-xl text-white font-semibold">Edge AI • No Cloud Raw Data</p>
-                    </div>
-                    <div class="h-12 w-px bg-brand-border hidden md:block"></div>
-                    <div class="text-left">
-                        <p class="mono-label mb-2">Waitlist</p>
-                        <p class="text-xl text-brand-gold font-semibold">12,400+ Joined</p>
-                    </div>
+        <div id="view-vault" class="view-pane space-y-6">
+            
+            <div id="vault-complete-ui" class="hidden space-y-6">
+                <div class="pro-card p-10 bg-blue-900 text-white text-center shadow-[8px_8px_0px_#FF5722]">
+                    <h2 class="text-4xl font-black italic uppercase leading-none mb-1 tracking-tighter">Project Ledger Closed</h2>
+                    <p class="mono text-[10px] font-black uppercase tracking-widest text-blue-300">Certified Archive Locked</p>
                 </div>
-            </section>
-        </main>
-
-        <main id="technology" class="view-section">
-            <div class="max-w-5xl mx-auto px-6 pt-20">
-                <button onclick="switchView('home')" class="mb-12 flex items-center gap-2 text-sm text-brand-muted hover:text-white transition-colors">
-                    <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Product
-                </button>
-                <div class="text-center mb-16">
-                    <h1 class="text-5xl font-bold mb-6 text-white">Technology & Evidence</h1>
-                    <p class="text-brand-muted text-xl max-w-2xl mx-auto">This page would contain detailed whitepapers, clinical validation studies, and deep-dives into the spectrometry technology.</p>
-                </div>
-                <div class="p-12 border border-brand-border rounded-xl bg-brand-card text-center">
-                    <p class="text-brand-muted">[ Detailed Engineering Documentation & Clinical Studies Placeholder ]</p>
+                
+                <div class="pro-card p-6 bg-white border-l-[12px] border-[#FF5722]">
+                    <h3 class="font-black text-xl uppercase italic mb-2 tracking-tight">Refer Mike Sorrenson?</h3>
+                    <p class="text-[11px] text-gray-500 mb-6 italic font-bold">Satisfied with the build? Support Mike and help neighbors find verified pros by sharing your referral link.</p>
+                    <div class="flex gap-2">
+                        <button class="flex-1 bg-black text-white py-4 font-black text-[10px] uppercase">Leave Review</button>
+                        <button class="flex-1 bg-white border-2 border-black py-4 font-black text-[10px] uppercase">Refer Friend</button>
+                    </div>
                 </div>
             </div>
-        </main>
 
-        <main id="checkout" class="view-section">
-            <div class="max-w-6xl mx-auto px-6 flex flex-col justify-center min-h-[85vh]">
-                <button onclick="switchView('home')" class="mb-8 flex items-center gap-2 text-sm text-brand-muted hover:text-white transition-colors">
-                    <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Product
-                </button>
-
-                <div class="grid grid-cols-1 lg:grid-cols-5 gap-12">
-                    
-                    <div class="lg:col-span-3">
-                        <h1 class="text-3xl font-bold text-white mb-8">Secure Allocation</h1>
-                        <form class="space-y-6">
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-xs font-bold text-brand-muted uppercase mb-2">First Name</label>
-                                    <input type="text" class="w-full bg-bg/50 border border-brand-border rounded-lg p-4 text-white focus:border-brand-gold outline-none transition-colors" placeholder="Jane">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-brand-muted uppercase mb-2">Last Name</label>
-                                    <input type="text" class="w-full bg-bg/50 border border-brand-border rounded-lg p-4 text-white focus:border-brand-gold outline-none transition-colors" placeholder="Doe">
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-brand-muted uppercase mb-2">Email Address</label>
-                                <input type="email" class="w-full bg-bg/50 border border-brand-border rounded-lg p-4 text-white focus:border-brand-gold outline-none transition-colors" placeholder="jane@example.com">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-brand-muted uppercase mb-2">Card Information</label>
-                                <div class="w-full bg-bg/50 border border-brand-border rounded-lg p-4 flex items-center justify-between">
-                                    <span class="text-brand-muted">•••• •••• •••• 4242</span>
-                                    <div class="flex gap-2">
-                                        <div class="w-8 h-5 bg-white/10 rounded"></div>
-                                        <div class="w-8 h-5 bg-white/10 rounded"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <button type="button" class="w-full bg-brand-gold hover:bg-brand-dim text-black font-bold text-lg py-5 rounded-lg transition-all mt-6">
-                                Pay $100.00 Deposit
-                            </button>
-                            
-                            <div class="flex justify-center gap-6 mt-6 text-brand-muted text-xs">
-                                <span class="flex items-center gap-1"><i data-lucide="lock" class="w-3 h-3"></i> SSL Secure</span>
-                                <span class="flex items-center gap-1"><i data-lucide="shield-check" class="w-3 h-3"></i> 30-Day Money Back</span>
-                            </div>
-                        </form>
-                    </div>
-
-                    <div class="lg:col-span-2">
-                        <div class="bg-brand-card border border-brand-border rounded-2xl p-8 sticky top-24">
-                            <h3 class="text-lg font-bold text-white mb-6 border-b border-brand-border pb-4">Order Summary</h3>
-                            
-                            <div class="space-y-4 mb-8">
-                                <div class="flex justify-between items-start">
-                                    <div>
-                                        <p class="text-white font-medium">Flow One Device</p>
-                                        <p class="text-xs text-brand-muted">Batch 1 Founder's Edition</p>
-                                    </div>
-                                    <div class="text-right">
-                                        <p class="text-white">$399.00</p>
-                                        <p class="text-xs text-brand-danger line-through">$499.00</p>
-                                    </div>
-                                </div>
-
-                                <div class="flex justify-between items-start">
-                                    <div>
-                                        <p class="text-white font-medium">Flow OS Membership</p>
-                                        <p class="text-xs text-brand-muted">12 Months Included</p>
-                                    </div>
-                                    <div class="text-right">
-                                        <p class="text-brand-success font-bold">FREE</p>
-                                        <p class="text-xs text-brand-muted line-through">$180.00</p>
-                                    </div>
-                                </div>
-
-                                <div class="flex justify-between items-start">
-                                    <div>
-                                        <p class="text-white font-medium">Priority Shipping</p>
-                                        <p class="text-xs text-brand-muted">Q3 2026 Delivery</p>
-                                    </div>
-                                    <div class="text-right">
-                                        <p class="text-brand-success font-bold">FREE</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="border-t border-brand-border pt-6 space-y-2">
-                                <div class="flex justify-between text-sm text-brand-muted">
-                                    <span>Total Value</span>
-                                    <span>$679.00</span>
-                                </div>
-                                <div class="flex justify-between text-sm text-brand-muted">
-                                    <span>Your Batch 1 Price</span>
-                                    <span>$399.00</span>
-                                </div>
-                                <div class="flex justify-between items-center pt-4">
-                                    <span class="text-white font-bold">Due Today (Deposit)</span>
-                                    <span class="text-3xl font-bold text-brand-gold">$100.00</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
+            <div class="space-y-3">
+                <div class="flex justify-between items-end mb-2">
+                    <h3 class="mono text-[11px] font-black text-gray-400 uppercase tracking-widest">Financial & Tax Export</h3>
+                    <span id="vault-pending-badge" class="bg-yellow-100 text-yellow-800 border border-yellow-800 px-2 py-1 mono text-[8px] font-bold uppercase">Docs Updating</span>
+                </div>
+                <div class="pro-card p-4 flex justify-between items-center bg-white hover:bg-gray-50 transition cursor-pointer">
+                    <p class="text-xs font-black uppercase italic">Final Financial Summary</p>
+                    <span class="text-xl">📄</span>
+                </div>
+                <div class="pro-card p-4 flex justify-between items-center bg-white hover:bg-gray-50 transition cursor-pointer">
+                    <p class="text-xs font-black uppercase italic">Executed Fixed-Price Agreement</p>
+                    <span class="text-xl">⚖️</span>
+                </div>
+                <div class="pro-card p-4 flex justify-between items-center bg-white hover:bg-gray-50 transition cursor-pointer">
+                    <p class="text-xs font-black uppercase italic">Verification Photo Log</p>
+                    <span class="text-xl">📸</span>
                 </div>
             </div>
-        </main>
 
-    </div>
+            <button onclick="navigate('view-heartbeat')" class="w-full bg-transparent border-2 border-black py-4 font-black text-[11px] uppercase tracking-widest text-black mt-8 hover:bg-gray-100">
+                ← Back to Heartbeat
+            </button>
+        </div>
 
-    <footer class="py-12 px-6 bg-bg border-t border-brand-border text-xs text-brand-muted">
-       <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
-          <div class="col-span-1">
-             <div class="flex items-center gap-2 mb-4">
-                <div class="w-2 h-2 bg-brand-gold rounded-sm"></div>
-                <span class="font-bold text-white tracking-tight">FLOW STATE</span>
-             </div>
-             <p>&copy; 2026 Flow State Technologies.</p>
-             <p class="mt-2">All rights reserved.</p>
-          </div>
-          <div class="col-span-1 md:col-span-2">
-             <strong class="text-white block mb-2">Regulatory Disclaimer</strong>
-             <p class="leading-relaxed opacity-80">
-                The Flow is a general wellness device. It is not intended to diagnose, treat, cure, or prevent any disease or medical condition. 
-                Any indicators regarding micro-hematuria, hydration, or ketones are for informational purposes only. 
-                Always consult a physician for professional medical advice.
-             </p>
-          </div>
-          <div class="col-span-1 flex flex-col gap-3">
-             <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
-             <a href="#" class="hover:text-white transition-colors">Terms of Service</a>
-             <a href="#" class="hover:text-white transition-colors">Contact</a>
-          </div>
-       </div>
-    </footer>
+    </main>
+
+    <nav id="nav-footer" class="fixed bottom-6 inset-x-4 max-w-md mx-auto z-[100] flex gap-2 hidden">
+        <button class="flex-[3] bg-black text-white py-5 font-black text-[11px] uppercase tracking-widest shadow-2xl flex items-center justify-center gap-2 active:scale-95 transition">
+            <span class="text-lg leading-none">💬</span> Message Mike
+        </button>
+        <button id="btn-vault-toggle" onclick="navigate('view-vault')" class="flex-1 bg-white border-2 border-black py-5 font-black text-[11px] uppercase shadow-2xl flex items-center justify-center active:bg-gray-100 transition">
+            📁 VAULT
+        </button>
+    </nav>
 
     <script>
-        // Router
-        function switchView(viewId) {
-            document.querySelectorAll('.view-section').forEach(el => {
-                el.classList.remove('active');
-                setTimeout(() => { if(!el.classList.contains('active')) el.style.display = 'none'; }, 300);
-            });
-            const target = document.getElementById(viewId);
-            if(target) {
-                target.style.display = 'block';
-                void target.offsetWidth; 
-                target.classList.add('active');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-        }
+        // Tracks state to know what elements to show
+        let isProjectComplete = false;
 
-        function scrollToId(id) {
-            const el = document.getElementById(id);
-            if(el) {
-                switchView('home');
-                setTimeout(() => el.scrollIntoView({ behavior: 'smooth' }), 100);
-            }
-        }
+        function navigate(viewId) {
+            // Hide all views
+            document.querySelectorAll('.view-pane').forEach(v => v.classList.remove('active'));
+            // Show target view
+            document.getElementById(viewId).classList.add('active');
+            
+            const status = document.getElementById('master-status');
+            const footer = document.getElementById('nav-footer');
+            const vaultBtn = document.getElementById('btn-vault-toggle');
 
-        document.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons();
-            initFlowVisualizer();
-            initChart();
-        });
-
-        // Visualizer
-        function initFlowVisualizer() {
-            const canvas = document.getElementById('flowCanvas');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            let width, height, time = 0;
-
-            function resize() {
-                width = canvas.width = canvas.parentElement.offsetWidth;
-                height = canvas.height = canvas.parentElement.offsetHeight;
-            }
-            window.addEventListener('resize', resize);
-            resize();
-
-            function draw() {
-                ctx.clearRect(0, 0, width, height);
-                time += 0.005;
+            // Manage Top Badge & Footer visibility based on view/state
+            if(viewId === 'view-bid' || viewId === 'view-contract') {
+                status.innerText = "PROPOSAL";
+                status.className = "status-badge badge-proposal";
+                footer.style.display = 'none';
+            } else {
+                footer.style.display = 'flex';
                 
-                ctx.beginPath();
-                for (let x = 0; x < width; x++) {
-                    const y = height / 2 + Math.sin(x * 0.005 + time) * 50;
-                    ctx.lineTo(x, y);
+                if (isProjectComplete) {
+                    status.innerText = "COMPLETE";
+                    status.className = "status-badge badge-complete";
+                } else {
+                    status.innerText = "IN-PROGRESS";
+                    status.className = "status-badge badge-progress";
                 }
-                ctx.strokeStyle = 'rgba(59, 130, 246, 0.3)';
-                ctx.lineWidth = 2;
-                ctx.stroke();
 
-                ctx.beginPath();
-                for (let x = 0; x < width; x++) {
-                    const y = height / 2 + Math.cos(x * 0.006 + time * 1.5) * 60 + 20;
-                    ctx.lineTo(x, y);
+                // Toggle logic for the Vault button in the footer
+                if(viewId === 'view-vault') {
+                    vaultBtn.innerHTML = "← LOG";
+                    vaultBtn.setAttribute('onclick', "navigate('view-heartbeat')");
+                } else {
+                    vaultBtn.innerHTML = "📁 VAULT";
+                    vaultBtn.setAttribute('onclick', "navigate('view-vault')");
                 }
-                ctx.strokeStyle = 'rgba(200, 170, 110, 0.3)';
-                ctx.lineWidth = 2;
-                ctx.stroke();
-
-                requestAnimationFrame(draw);
             }
-            draw();
+            window.scrollTo(0,0);
         }
 
-        // Chart
-        function initChart() {
-            const ctx = document.getElementById('mainChart');
-            if(ctx) {
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
-                        datasets: [{
-                            data: [0.8, 1.2, 1.5, 2.1, 1.9, 1.2, 0.9],
-                            borderColor: '#C8AA6E',
-                            borderWidth: 2,
-                            backgroundColor: (context) => {
-                                const ctx = context.chart.ctx;
-                                const gradient = ctx.createLinearGradient(0, 0, 0, 200);
-                                gradient.addColorStop(0, 'rgba(200, 170, 110, 0.2)');
-                                gradient.addColorStop(1, 'rgba(200, 170, 110, 0)');
-                                return gradient;
-                            },
-                            fill: true,
-                            tension: 0.4,
-                            pointRadius: 0
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: { x: { display: false }, y: { display: false } }
-                    }
-                });
-            }
+        function approveItem(cardId, title, amount) {
+            const card = document.getElementById(cardId);
+            
+            // 1. Teleport Animation Out
+            card.classList.add('teleport-out');
+            
+            setTimeout(() => {
+                // 2. Hide Card from Action Zone
+                card.style.display = 'none';
+                
+                // 3. Create Timeline Entry
+                const log = document.getElementById('dynamic-log');
+                const timestamp = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                const entry = document.createElement('div');
+                entry.className = "timeline-item";
+                entry.innerHTML = `
+                    <div class="timeline-dot dot-action"></div>
+                    <p class="mono text-[10px] text-green-600 font-bold uppercase mb-2">Today @ ${timestamp} — VERIFIED ACTION</p>
+                    <div class="pro-card p-4 log-entry-approved bg-green-50 shadow-[4px_4px_0px_#166534] border-green-800">
+                        <p class="text-xs font-black uppercase italic">${title}</p>
+                        <p class="text-[10px] font-bold text-gray-600 mt-1">${amount} logged securely to Project Ledger.</p>
+                    </div>
+                `;
+                // 4. Inject at top of timeline
+                log.prepend(entry);
+
+                // 5. Check if Action Zone is empty
+                const remainingActions = document.querySelectorAll('#action-zone .pro-card:not([style*="display: none"])');
+                if (remainingActions.length === 0) {
+                    triggerProjectCompletion();
+                }
+            }, 400); // Wait for CSS teleport animation to finish
+        }
+
+        function triggerProjectCompletion() {
+            isProjectComplete = true;
+            
+            // Hide action zone container entirely
+            document.getElementById('action-zone').style.display = 'none';
+            
+            // Update Top Badge immediately
+            const status = document.getElementById('master-status');
+            status.innerText = "COMPLETE";
+            status.className = "status-badge badge-complete";
+            
+            // Update Vault Page contents dynamically
+            document.getElementById('vault-complete-ui').classList.remove('hidden');
+            document.getElementById('vault-pending-badge').style.display = 'none'; // Remove 'Docs Updating' badge
+            
+            // Optional: Inject a "Project Finished" capstone into the timeline
+            const log = document.getElementById('dynamic-log');
+            const entry = document.createElement('div');
+            entry.className = "timeline-item";
+            entry.innerHTML = `
+                <div class="timeline-dot bg-black border-black"></div>
+                <div class="bg-black text-white p-4 text-center mt-4">
+                    <p class="text-sm font-black uppercase italic tracking-widest">Project Ledger Closed</p>
+                    <p class="text-[10px] text-gray-400 mt-1 mono">All milestones validated & paid.</p>
+                </div>
+            `;
+            log.prepend(entry);
         }
     </script>
 </body>
