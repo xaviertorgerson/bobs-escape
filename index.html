@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en"><head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ProLink // Davis Master Bath</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&amp;family=IBM+Plex+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
     <style>
         :root { --pro-orange: #FF5722; --pro-carbon: #1A1A1B; }
         body { font-family: 'Inter', sans-serif; background: #F4F4F2; color: var(--pro-carbon); overflow-x: hidden; }
@@ -33,21 +31,26 @@
         .dot-photo { background: var(--pro-carbon); }
         .dot-msg { background: #3B82F6; border-color: #1E40AF; }
 
-        /* FIXED ANIMATION LOGIC */
         .teleport-out { transform: translateY(30px); opacity: 0; pointer-events: none; transition: 0.4s ease-in; }
         .log-entry-approved { border-left: 6px solid #22C55E !important; animation: slideIn 0.4s ease-out; }
         
+        /* MOBILE UX FIXES */
         canvas#sig-canvas { cursor: crosshair; background: #fff; width: 100%; height: 120px; border: 2px dashed #000; touch-action: none; }
         .secure-tooltip { display: flex; gap: 12px; align-items: flex-start; background: #f8fafc; padding: 12px; border: 1px solid #e2e8f0; border-radius: 4px; }
+        .pb-safe { padding-bottom: max(2rem, env(safe-area-inset-bottom)); }
+        .bottom-safe { bottom: max(1.5rem, env(safe-area-inset-bottom)); }
 
         @keyframes slideIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* LIGHTBOX STYLES */
+        #lightbox.show { display: flex; animation: fadeIn 0.2s ease-out; }
     </style>
-</head>
-<body class="grid-bg pb-40">
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.pointer-events-none{pointer-events:none}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.sticky{position:sticky}.inset-0{inset:0px}.left-2{left:0.5rem}.right-0{right:0px}.right-2{right:0.5rem}.top-0{top:0px}.top-2{top:0.5rem}.z-40{z-index:40}.z-50{z-index:50}.z-\[100\]{z-index:100}.z-\[200\]{z-index:200}.mx-auto{margin-left:auto;margin-right:auto}.mb-1{margin-bottom:0.25rem}.mb-2{margin-bottom:0.5rem}.mb-3{margin-bottom:0.75rem}.mb-4{margin-bottom:1rem}.mb-6{margin-bottom:1.5rem}.mt-1{margin-top:0.25rem}.mt-12{margin-top:3rem}.mt-2{margin-top:0.5rem}.mt-4{margin-top:1rem}.mt-8{margin-top:2rem}.mt-auto{margin-top:auto}.flex{display:flex}.hidden{display:none}.h-14{height:3.5rem}.h-32{height:8rem}.h-40{height:10rem}.h-48{height:12rem}.max-h-\[75vh\]{max-height:75vh}.min-h-screen{min-height:100vh}.w-14{width:3.5rem}.w-\[25\%\]{width:25%}.w-\[50\%\]{width:50%}.w-\[90\%\]{width:90%}.w-full{width:100%}.max-w-2xl{max-width:42rem}.max-w-\[70\%\]{max-width:70%}.max-w-md{max-width:28rem}.flex-1{flex:1 1 0%}.flex-\[3\]{flex:3}.flex-grow{flex-grow:1}.cursor-pointer{cursor:pointer}.flex-col{flex-direction:column}.items-end{align-items:flex-end}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-1{gap:0.25rem}.gap-2{gap:0.5rem}.gap-3{gap:0.75rem}.gap-4{gap:1rem}.space-y-3 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.75rem * var(--tw-space-y-reverse))}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.space-y-6 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.5rem * var(--tw-space-y-reverse))}.space-y-8 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(2rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(2rem * var(--tw-space-y-reverse))}.overflow-hidden{overflow:hidden}.overflow-y-auto{overflow-y:auto}.border{border-width:1px}.border-2{border-width:2px}.border-4{border-width:4px}.border-b{border-bottom-width:1px}.border-b-2{border-bottom-width:2px}.border-l-\[12px\]{border-left-width:12px}.border-dashed{border-style:dashed}.border-double{border-style:double}.border-\[\#FF5722\]{--tw-border-opacity:1;border-color:rgb(255 87 34 / var(--tw-border-opacity, 1))}.border-amber-400{--tw-border-opacity:1;border-color:rgb(251 191 36 / var(--tw-border-opacity, 1))}.border-black{--tw-border-opacity:1;border-color:rgb(0 0 0 / var(--tw-border-opacity, 1))}.border-gray-200{--tw-border-opacity:1;border-color:rgb(229 231 235 / var(--tw-border-opacity, 1))}.border-green-700{--tw-border-opacity:1;border-color:rgb(21 128 61 / var(--tw-border-opacity, 1))}.border-transparent{border-color:transparent}.border-white{--tw-border-opacity:1;border-color:rgb(255 255 255 / var(--tw-border-opacity, 1))}.bg-\[\#1A1A1B\]\/95{background-color:rgb(26 26 27 / 0.95)}.bg-\[\#FF5722\]{--tw-bg-opacity:1;background-color:rgb(255 87 34 / var(--tw-bg-opacity, 1))}.bg-amber-50{--tw-bg-opacity:1;background-color:rgb(255 251 235 / var(--tw-bg-opacity, 1))}.bg-black{--tw-bg-opacity:1;background-color:rgb(0 0 0 / var(--tw-bg-opacity, 1))}.bg-gray-200{--tw-bg-opacity:1;background-color:rgb(229 231 235 / var(--tw-bg-opacity, 1))}.bg-gray-50{--tw-bg-opacity:1;background-color:rgb(249 250 251 / var(--tw-bg-opacity, 1))}.bg-green-50{--tw-bg-opacity:1;background-color:rgb(240 253 244 / var(--tw-bg-opacity, 1))}.bg-transparent{background-color:transparent}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.object-contain{object-fit:contain}.object-cover{object-fit:cover}.p-3{padding:0.75rem}.p-4{padding:1rem}.p-5{padding:1.25rem}.p-6{padding:1.5rem}.px-1{padding-left:0.25rem;padding-right:0.25rem}.px-2{padding-left:0.5rem;padding-right:0.5rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-4{padding-left:1rem;padding-right:1rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-3{padding-top:0.75rem;padding-bottom:0.75rem}.py-4{padding-top:1rem;padding-bottom:1rem}.py-5{padding-top:1.25rem;padding-bottom:1.25rem}.pb-12{padding-bottom:3rem}.pb-2{padding-bottom:0.5rem}.pb-4{padding-bottom:1rem}.pt-4{padding-top:1rem}.pt-8{padding-top:2rem}.text-center{text-align:center}.text-2xl{font-size:1.5rem;line-height:2rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-\[10px\]{font-size:10px}.text-\[11px\]{font-size:11px}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-black{font-weight:900}.font-bold{font-weight:700}.font-light{font-weight:300}.font-medium{font-weight:500}.uppercase{text-transform:uppercase}.italic{font-style:italic}.leading-none{line-height:1}.leading-relaxed{line-height:1.625}.leading-tight{line-height:1.25}.tracking-\[0\.2em\]{letter-spacing:0.2em}.tracking-tight{letter-spacing:-0.025em}.tracking-tighter{letter-spacing:-0.05em}.tracking-widest{letter-spacing:0.1em}.text-\[\#FF5722\]{--tw-text-opacity:1;color:rgb(255 87 34 / var(--tw-text-opacity, 1))}.text-blue-500{--tw-text-opacity:1;color:rgb(59 130 246 / var(--tw-text-opacity, 1))}.text-blue-600{--tw-text-opacity:1;color:rgb(37 99 235 / var(--tw-text-opacity, 1))}.text-gray-300{--tw-text-opacity:1;color:rgb(209 213 219 / var(--tw-text-opacity, 1))}.text-gray-400{--tw-text-opacity:1;color:rgb(156 163 175 / var(--tw-text-opacity, 1))}.text-gray-500{--tw-text-opacity:1;color:rgb(107 114 128 / var(--tw-text-opacity, 1))}.text-gray-600{--tw-text-opacity:1;color:rgb(75 85 99 / var(--tw-text-opacity, 1))}.text-green-700{--tw-text-opacity:1;color:rgb(21 128 61 / var(--tw-text-opacity, 1))}.text-slate-500{--tw-text-opacity:1;color:rgb(100 116 139 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.underline{-webkit-text-decoration-line:underline;text-decoration-line:underline}.opacity-40{opacity:0.4}.opacity-60{opacity:0.6}.opacity-80{opacity:0.8}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[4px_4px_0px_\#CCC\]{--tw-shadow:4px 4px 0px #CCC;--tw-shadow-colored:4px 4px 0px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-\[6px_6px_0px_\#FF5722\]{--tw-shadow:6px 6px 0px #FF5722;--tw-shadow-colored:6px 6px 0px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.outline-none{outline:2px solid transparent;outline-offset:2px}.grayscale{--tw-grayscale:grayscale(100%);filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.hover\:border-gray-200:hover{--tw-border-opacity:1;border-color:rgb(229 231 235 / var(--tw-border-opacity, 1))}.hover\:bg-white:hover{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.hover\:text-\[\#FF5722\]:hover{--tw-text-opacity:1;color:rgb(255 87 34 / var(--tw-text-opacity, 1))}.hover\:text-black:hover{--tw-text-opacity:1;color:rgb(0 0 0 / var(--tw-text-opacity, 1))}.focus\:border-\[\#FF5722\]:focus{--tw-border-opacity:1;border-color:rgb(255 87 34 / var(--tw-border-opacity, 1))}@media (min-width: 768px){.md\:max-w-2xl{max-width:42rem}}</style></head>
+<body class="grid-bg">
 
     <nav class="bg-white border-b-2 border-black p-4 sticky top-0 z-50">
-        <div class="max-w-md mx-auto flex justify-between items-center">
+        <div class="max-w-md md:max-w-2xl mx-auto flex justify-between items-center">
             <div class="flex items-center gap-2">
                 <span class="font-black text-xl italic uppercase tracking-tighter cursor-pointer" onclick="location.reload()">ProLink</span>
                 <span class="text-gray-300 font-light text-xl">//</span>
@@ -57,17 +60,17 @@
         </div>
     </nav>
 
-    <main class="max-w-md mx-auto p-4 space-y-8">
+    <main class="max-w-md md:max-w-2xl mx-auto p-4 space-y-8 flex flex-col min-h-screen">
 
-        <div id="view-bid" class="view-pane active space-y-6">
+        <div id="view-bid" class="view-pane space-y-6 flex-grow relative">
             <header><h2 class="text-4xl font-black italic uppercase tracking-tighter leading-none">123 Holland Road</h2></header>
             
             <div class="pro-card p-5 border-l-[12px] border-black flex items-center justify-between">
                 <div class="flex items-center gap-4">
-                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80" class="w-14 h-14 border-2 border-black object-cover grayscale">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&amp;fit=crop&amp;w=150&amp;q=80" class="w-14 h-14 border-2 border-black object-cover grayscale">
                     <div>
                         <h3 class="font-black text-sm uppercase italic leading-none">Sorrenson Tile</h3>
-                        <p class="text-[9px] mono text-gray-500 font-bold uppercase mt-1">Mike Sorrenson • LIC #99281-B</p>
+                        <p class="text-[10px] mono text-gray-500 font-bold uppercase mt-1">Mike Sorrenson • LIC #99281-B</p>
                     </div>
                 </div>
                 <div class="status-badge bg-green-50 text-green-700 border-green-700">VERIFIED ✓</div>
@@ -93,11 +96,14 @@
                     <span class="mono text-[10px] font-bold uppercase italic tracking-widest">Total Investment</span>
                     <span class="text-3xl font-black italic">$4,700.00</span>
                 </div>
+            </div>
+
+            <div class="sticky bottom-safe z-40 mt-8 pb-4">
                 <button onclick="navigate('view-contract')" class="btn-main py-5 text-sm">Review Agreement</button>
             </div>
         </div>
 
-        <div id="view-contract" class="view-pane space-y-6">
+        <div id="view-contract" class="view-pane space-y-6 flex-grow relative active">
             <div class="pro-card p-6">
                 <h2 class="font-black text-2xl italic uppercase mb-6 tracking-tighter">Agreement Terms</h2>
                 <div class="bg-gray-50 border-2 border-black p-4 h-48 overflow-y-auto mb-6 text-[11px] font-bold border-dashed leading-relaxed">
@@ -110,14 +116,15 @@
                 <div class="space-y-4">
                     <input type="text" placeholder="NAME ON CARD" class="border-2 border-black p-3 w-full mono text-xs uppercase outline-none focus:border-[#FF5722]">
                     <div class="flex gap-2">
-                        <input type="text" placeholder="CARD NUMBER" class="border-2 border-black p-3 w-[50%] mono text-xs outline-none focus:border-[#FF5722]">
-                        <input type="text" placeholder="EXP (MM/YY)" class="border-2 border-black p-3 w-[25%] mono text-xs outline-none focus:border-[#FF5722]">
-                        <input type="text" placeholder="CVC" class="border-2 border-black p-3 w-[25%] mono text-xs outline-none focus:border-[#FF5722]">
+                        <input type="text" placeholder="CARD NUMBER" inputmode="numeric" class="border-2 border-black p-3 w-[50%] mono text-xs outline-none focus:border-[#FF5722]">
+                        <input type="text" placeholder="EXP (MM/YY)" inputmode="numeric" class="border-2 border-black p-3 w-[25%] mono text-xs outline-none focus:border-[#FF5722]">
+                        <input type="text" placeholder="CVC" inputmode="numeric" class="border-2 border-black p-3 w-[25%] mono text-xs outline-none focus:border-[#FF5722]">
                     </div>
                     
-                    <div class="relative">
-                        <canvas id="sig-canvas"></canvas>
-                        <div class="absolute top-2 left-2 pointer-events-none text-[8px] mono text-gray-400 uppercase font-bold">Draw Signature Below</div>
+                    <div class="relative w-[90%] mx-auto mt-4 border-2 border-transparent hover:border-gray-200">
+                        <canvas id="sig-canvas" width="529" height="120"></canvas>
+                        <div class="absolute top-2 left-2 pointer-events-none text-[10px] mono text-gray-400 uppercase font-bold">Draw Signature Below</div>
+                        <button onclick="clearCanvas()" class="absolute top-2 right-2 text-[10px] mono text-blue-600 underline font-bold">Clear</button>
                     </div>
 
                     <div class="secure-tooltip mt-4">
@@ -125,11 +132,14 @@
                         <p class="text-[10px] text-slate-500 font-medium leading-tight"><strong>AUTHORIZATION ONLY:</strong> A temporary hold is placed for the project value. Funds remain in your control and do not transfer until you explicitly approve timeline milestones.</p>
                     </div>
                 </div>
-                <button onclick="navigate('view-heartbeat')" class="btn-main py-5 text-sm mt-8">Sign and Authorize Hold</button>
+            </div>
+
+            <div class="sticky bottom-safe z-40 mt-8 pb-4">
+                <button onclick="navigate('view-heartbeat')" class="btn-main py-5 text-sm">Sign and Authorize Hold</button>
             </div>
         </div>
 
-        <div id="view-heartbeat" class="view-pane space-y-8">
+        <div id="view-heartbeat" class="view-pane space-y-8 flex-grow relative">
             <div class="flex justify-between items-end border-b border-gray-200 pb-2 px-1">
                 <h2 id="dynamic-action-title" class="mono text-[11px] font-bold text-gray-400 uppercase tracking-widest">Action Required</h2>
                 <button onclick="navigate('view-vault')" class="flex items-center gap-1 text-[10px] font-black uppercase hover:text-[#FF5722]">📁 Access Vault</button>
@@ -139,14 +149,14 @@
                 <div id="card-payment" class="pro-card p-5 relative overflow-hidden">
                     <div class="absolute top-0 right-0 bg-[#FF5722] text-white px-3 py-1 mono text-[10px] font-bold italic">SQUARE SECURE</div>
                     <h3 class="font-black text-xl mb-1 italic uppercase leading-none">Release Milestone 1</h3>
-                    <p class="text-[10px] text-gray-500 mb-4 font-bold italic">Phase 1: Waterproofing & Inspection ($1,850)</p>
-                    <button onclick="approveItem('card-payment', 'Payment Released: Phase 1', '$1,850.00', true)" class="btn-main py-4 text-sm">Verify & Release</button>
+                    <p class="text-[10px] text-gray-500 mb-4 font-bold italic">Phase 1: Waterproofing &amp; Inspection ($1,850)</p>
+                    <button onclick="approveItem('card-payment', 'Payment Released: Phase 1', '$1,850.00', true)" class="btn-main py-4 text-sm">Verify &amp; Release</button>
                 </div>
 
                 <div id="card-change-order" class="pro-card p-4 flex justify-between items-center bg-amber-50 border-amber-400">
                     <div class="max-w-[70%]">
                         <h4 class="font-black text-[10px] uppercase">Change Order #03</h4>
-                        <p class="text-[9px] text-gray-600 font-bold uppercase italic tracking-tighter">Custom niche tile upgrade (+ $180.00)</p>
+                        <p class="text-[10px] text-gray-600 font-bold uppercase italic tracking-tighter">Custom niche tile upgrade (+ $180.00)</p>
                     </div>
                     <button onclick="approveItem('card-change-order', 'Change Order #03 Approved', '+$180.00', false)" class="bg-black text-white px-4 py-2 text-[10px] font-black uppercase">Sign</button>
                 </div>
@@ -184,8 +194,8 @@
                     <div class="timeline-item">
                         <div class="timeline-dot dot-photo"></div>
                         <p class="mono text-[10px] text-gray-400 uppercase mb-2">Today @ 1:08 PM — PROOF OF WORK</p>
-                        <div class="pro-card overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1600585152220-90363fe7e115?auto=format&fit=crop&w=600&q=80" class="w-full h-40 object-cover grayscale">
+                        <div class="pro-card overflow-hidden cursor-pointer" onclick="openLightbox('https://images.unsplash.com/photo-1600585152220-90363fe7e115?auto=format&amp;fit=crop&amp;w=1200&amp;q=80')">
+                            <img src="https://images.unsplash.com/photo-1600585152220-90363fe7e115?auto=format&amp;fit=crop&amp;w=600&amp;q=80" class="w-full h-40 object-cover grayscale">
                         </div>
                     </div>
 
@@ -200,47 +210,58 @@
                     <div class="timeline-item">
                         <div class="timeline-dot dot-photo"></div>
                         <p class="mono text-[10px] text-gray-400 uppercase mb-2">Feb 18 @ 9:15 AM — PROOF OF WORK</p>
-                        <div class="pro-card overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=600&q=80" class="w-full h-32 object-cover grayscale opacity-80">
+                        <div class="pro-card overflow-hidden cursor-pointer" onclick="openLightbox('https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&amp;fit=crop&amp;w=1200&amp;q=80')">
+                            <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&amp;fit=crop&amp;w=600&amp;q=80" class="w-full h-32 object-cover grayscale opacity-80">
                         </div>
                     </div>
                 </div>
             </section>
+            
+            <nav id="nav-footer" class="sticky bottom-safe mt-12 z-[100] flex gap-2 hidden pb-4" style="display: none;">
+                <button class="flex-[3] bg-black text-white py-5 font-black text-[11px] uppercase tracking-widest shadow-2xl">💬 Message Mike</button>
+                <button id="btn-vault-toggle" onclick="navigate('view-vault')" class="flex-1 bg-white border-2 border-black py-5 font-black text-[11px] uppercase shadow-2xl">📁 VAULT</button>
+            </nav>
         </div>
 
-        <div id="view-vault" class="view-pane space-y-6">
+        <div id="view-vault" class="view-pane space-y-6 flex-grow">
             <header>
                 <h2 class="text-3xl font-black italic uppercase tracking-tighter leading-none">Project Vault</h2>
                 <p id="vault-subtitle" class="mono text-[10px] font-bold text-gray-400 uppercase mt-2 tracking-widest">Digital Property Archive</p>
             </header>
             <div class="space-y-3">
-                <div class="pro-card p-4 flex justify-between items-center bg-white"><p class="text-xs font-black uppercase italic">Executed Agreement</p><button class="mono text-[9px] border border-black px-2 py-1">DOWNLOAD</button></div>
-                <div class="pro-card p-4 flex justify-between items-center bg-white"><p class="text-xs font-black uppercase italic">Photo Verification Log</p><button class="mono text-[9px] border border-black px-2 py-1">ZIP ARCHIVE</button></div>
+                <div class="pro-card p-4 flex justify-between items-center bg-white"><p class="text-xs font-black uppercase italic">Executed Agreement</p><button class="mono text-[10px] border border-black px-2 py-1">DOWNLOAD</button></div>
+                <div class="pro-card p-4 flex justify-between items-center bg-white"><p class="text-xs font-black uppercase italic">Photo Verification Log</p><button class="mono text-[10px] border border-black px-2 py-1">ZIP ARCHIVE</button></div>
                 <div id="vault-tax-row" class="pro-card p-4 flex justify-between items-center bg-gray-50 opacity-60">
                     <div>
                         <p class="text-xs font-black uppercase italic">Closing Tax Ledger</p>
-                        <p id="tax-msg" class="text-[8px] mono text-gray-400 font-bold uppercase tracking-tight">Pending Completion...</p>
+                        <p id="tax-msg" class="text-[10px] mono text-gray-400 font-bold uppercase tracking-tight">Pending Completion...</p>
                     </div>
-                    <span id="tax-status-badge" class="mono text-[8px] bg-gray-200 px-2 py-1 font-bold">LOCKED</span>
+                    <span id="tax-status-badge" class="mono text-[10px] bg-gray-200 px-2 py-1 font-bold">LOCKED</span>
                 </div>
             </div>
             <button onclick="navigate('view-heartbeat')" class="w-full bg-transparent border-2 border-black py-4 font-black text-[11px] uppercase mt-8">← Back</button>
         </div>
 
-        <footer class="pt-12 pb-8 text-center opacity-40">
-            <p class="mono text-[9px] uppercase font-bold tracking-[0.2em]">Powered by ProLink</p>
-            <p class="text-[8px] italic mt-1 font-bold uppercase">Secure Project Governance & Vaulting</p>
+        <footer class="pt-8 pb-12 text-center opacity-40 mt-auto">
+            <p class="mono text-[10px] uppercase font-bold tracking-[0.2em]">Powered by ProLink</p>
+            <p class="text-[10px] italic mt-1 font-bold uppercase">Secure Project Governance &amp; Vaulting</p>
         </footer>
 
     </main>
 
-    <nav id="nav-footer" class="fixed bottom-6 inset-x-4 max-w-md mx-auto z-[100] flex gap-2 hidden">
-        <button class="flex-[3] bg-black text-white py-5 font-black text-[11px] uppercase tracking-widest shadow-2xl">💬 Message Mike</button>
-        <button id="btn-vault-toggle" onclick="navigate('view-vault')" class="flex-1 bg-white border-2 border-black py-5 font-black text-[11px] uppercase shadow-2xl">📁 VAULT</button>
-    </nav>
+    <div id="lightbox" class="fixed inset-0 bg-[#1A1A1B]/95 z-[200] hidden flex-col justify-center items-center p-4" onclick="closeLightbox()">
+        <div class="relative w-full max-w-2xl bg-white border-4 border-white" onclick="event.stopPropagation()">
+            <img id="lightbox-img" src="" class="w-full max-h-[75vh] object-contain">
+            <div class="p-4 flex justify-between items-center bg-black text-white">
+                <span class="mono text-[10px] font-bold uppercase">SECURE VERIFICATION</span>
+                <button onclick="closeLightbox()" class="mono text-[10px] border border-white px-3 py-1 font-bold hover:bg-white hover:text-black">CLOSE</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         let isProjectComplete = false;
+        let canvasCtx = null;
 
         function navigate(viewId) {
             document.querySelectorAll('.view-pane').forEach(v => v.classList.remove('active'));
@@ -253,7 +274,11 @@
                 footer.style.display = 'none';
                 if(viewId === 'view-contract') setTimeout(initSignature, 100);
             } else {
-                footer.style.display = 'flex';
+                if (viewId === 'view-heartbeat') {
+                    footer.style.display = 'flex';
+                } else {
+                    footer.style.display = 'none'; // Hide fixed nav in vault
+                }
                 status.innerText = isProjectComplete ? "COMPLETE" : "IN-PROGRESS";
                 status.className = isProjectComplete ? "status-badge badge-complete" : "status-badge badge-progress";
                 document.getElementById('btn-vault-toggle').innerHTML = (viewId === 'view-vault') ? "← LOG" : "📁 VAULT";
@@ -264,16 +289,16 @@
         function initSignature() {
             const canvas = document.getElementById('sig-canvas');
             if(!canvas) return;
-            const ctx = canvas.getContext('2d');
+            canvasCtx = canvas.getContext('2d');
             let drawing = false;
             canvas.width = canvas.parentElement.offsetWidth; canvas.height = 120;
-            const stop = () => { drawing = false; ctx.beginPath(); };
+            const stop = () => { drawing = false; canvasCtx.beginPath(); };
             const draw = (e) => {
                 if (!drawing) return;
                 const rect = canvas.getBoundingClientRect();
                 const x = (e.clientX || e.touches[0].clientX) - rect.left;
                 const y = (e.clientY || e.touches[0].clientY) - rect.top;
-                ctx.lineWidth = 2; ctx.lineTo(x, y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x, y);
+                canvasCtx.lineWidth = 2; canvasCtx.lineTo(x, y); canvasCtx.stroke(); canvasCtx.beginPath(); canvasCtx.moveTo(x, y);
             };
             canvas.addEventListener('mousedown', () => drawing = true);
             canvas.addEventListener('mouseup', stop);
@@ -281,6 +306,13 @@
             canvas.addEventListener('touchstart', (e) => { e.preventDefault(); drawing = true; });
             canvas.addEventListener('touchend', stop);
             canvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e); });
+        }
+
+        function clearCanvas() {
+            if(canvasCtx) {
+                const canvas = document.getElementById('sig-canvas');
+                canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+            }
         }
 
         function approveItem(cardId, title, amount, triggersNext, isFinal = false) {
@@ -322,13 +354,25 @@
             document.getElementById('tax-msg').innerText = "Finalized Ledger — Ready for Export";
             document.getElementById('tax-msg').classList.add('text-green-600');
             document.getElementById('tax-status-badge').innerText = "UNLOCKED";
-            document.getElementById('tax-status-badge').className = "mono text-[8px] bg-green-100 text-green-800 px-2 py-1 font-bold border border-green-800";
+            document.getElementById('tax-status-badge').className = "mono text-[10px] bg-green-100 text-green-800 px-2 py-1 font-bold border border-green-800";
             
             const dlBtn = document.createElement('button');
-            dlBtn.className = "mono text-[9px] border border-green-800 px-2 py-1 hover:bg-green-800 hover:text-white transition";
+            dlBtn.className = "mono text-[10px] border border-green-800 px-2 py-1 hover:bg-green-800 hover:text-white transition";
             dlBtn.innerText = "TAX DOCS";
             taxRow.appendChild(dlBtn);
         }
+
+        function openLightbox(src) {
+            document.getElementById('lightbox-img').src = src;
+            document.getElementById('lightbox').classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('show');
+            document.body.style.overflow = '';
+        }
     </script>
+
 </body>
 </html>
