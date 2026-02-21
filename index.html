@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=IBM+Plex+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --pro-orange: #FF5722; --pro-carbon: #1A1A1B; --pro-blue: #2A4494; }
+        :root { --pro-orange: #FF5722; --pro-carbon: #1A1A1B; }
         body { font-family: 'Inter', sans-serif; background: #F4F4F2; color: var(--pro-carbon); overflow-x: hidden; }
         .mono { font-family: 'IBM Plex Mono', monospace; }
         
@@ -20,13 +20,11 @@
         .btn-main { background: var(--pro-orange); color: white; font-weight: 900; text-transform: uppercase; border: 2px solid var(--pro-carbon); box-shadow: 4px 4px 0px var(--pro-carbon); transition: 0.1s; cursor: pointer; text-align: center; width: 100%; display: block; }
         .btn-main:active { transform: translate(2px, 2px); box-shadow: 0px 0px 0px var(--pro-carbon); }
         
-        /* Badges */
-        .status-badge { font-family: 'IBM Plex Mono'; font-weight: 700; font-size: 10px; border: 2px solid; padding: 4px 10px; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; }
+        .status-badge { font-family: 'IBM Plex Mono'; font-weight: 700; font-size: 10px; border: 2px solid; padding: 4px 10px; text-transform: uppercase; letter-spacing: 1px; }
         .badge-proposal { background: #F3F4F6; color: #374151; border-color: #374151; }
         .badge-progress { background: #DBEAFE; color: #1E40AF; border-color: #1E40AF; }
         .badge-complete { background: #DCFCE7; color: #166534; border-color: #166534; }
 
-        /* Timeline */
         .timeline-container { position: relative; padding-left: 24px; }
         .timeline-line { position: absolute; left: 7px; top: 0; bottom: 0; width: 2px; background: var(--pro-carbon); opacity: 0.1; }
         .timeline-item { position: relative; padding-bottom: 32px; animation: fadeIn 0.5s ease-out forwards; }
@@ -35,11 +33,13 @@
         .dot-photo { background: var(--pro-carbon); }
         .dot-msg { background: #3B82F6; border-color: #1E40AF; }
 
-        .secure-tooltip { background: #F8FAFC; border: 1px solid #E2E8F0; padding: 12px; border-radius: 4px; display: flex; gap: 10px; }
-        
-        /* Animations */
-        .teleport-out { transform: scale(0.9) translateY(20px); opacity: 0; pointer-events: none; }
+        /* FIXED ANIMATION LOGIC */
+        .teleport-out { transform: translateY(30px); opacity: 0; pointer-events: none; transition: 0.4s ease-in; }
         .log-entry-approved { border-left: 6px solid #22C55E !important; animation: slideIn 0.4s ease-out; }
+        
+        canvas#sig-canvas { cursor: crosshair; background: #fff; width: 100%; height: 120px; border: 2px dashed #000; touch-action: none; }
+        .secure-tooltip { display: flex; gap: 12px; align-items: flex-start; background: #f8fafc; padding: 12px; border: 1px solid #e2e8f0; border-radius: 4px; }
+
         @keyframes slideIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
@@ -49,7 +49,7 @@
     <nav class="bg-white border-b-2 border-black p-4 sticky top-0 z-50">
         <div class="max-w-md mx-auto flex justify-between items-center">
             <div class="flex items-center gap-2">
-                <span class="font-black text-xl italic uppercase tracking-tighter">ProLink</span>
+                <span class="font-black text-xl italic uppercase tracking-tighter cursor-pointer" onclick="location.reload()">ProLink</span>
                 <span class="text-gray-300 font-light text-xl">//</span>
                 <span class="font-bold text-[10px] uppercase tracking-widest text-[#FF5722] mt-1">Davis Master Bath</span>
             </div>
@@ -61,7 +61,7 @@
 
         <div id="view-bid" class="view-pane active space-y-6">
             <header><h2 class="text-4xl font-black italic uppercase tracking-tighter leading-none">123 Holland Road</h2></header>
-
+            
             <div class="pro-card p-5 border-l-[12px] border-black flex items-center justify-between">
                 <div class="flex items-center gap-4">
                     <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80" class="w-14 h-14 border-2 border-black object-cover grayscale">
@@ -78,40 +78,48 @@
                 <div class="space-y-6">
                     <div>
                         <div class="flex justify-between font-black text-xs uppercase mb-1"><span>Waterproofing System</span><span>$1,850</span></div>
-                        <p class="text-[10px] text-gray-500 leading-tight italic">Demo of existing pan, installation of Kerdi-Board system and flood test.</p>
+                        <p class="text-[10px] text-gray-500 italic">Demo of pan, Kerdi-Board install, and 24hr flood test.</p>
                     </div>
                     <div>
-                        <div class="flex justify-between font-black text-xs uppercase mb-1"><span>Main Floor & Wall Tile</span><span>$2,400</span></div>
-                        <p class="text-[10px] text-gray-500 leading-tight italic">Precision install of 12x24 Porcelain with 1/16" grout lines.</p>
+                        <div class="flex justify-between font-black text-xs uppercase mb-1"><span>Main Floor &amp; Wall Tile</span><span>$2,400</span></div>
+                        <p class="text-[10px] text-gray-500 italic">12x24 Porcelain with 1/16" grout lines.</p>
                     </div>
                     <div>
-                        <div class="flex justify-between font-black text-xs uppercase mb-1"><span>Logistics & Protection</span><span>$450</span></div>
-                        <p class="text-[10px] text-gray-500 leading-tight italic">Dust mitigation, floor masking, and commercial disposal fees.</p>
+                        <div class="flex justify-between font-black text-xs uppercase mb-1"><span>Grout &amp; Sealant</span><span>$450</span></div>
+                        <p class="text-[10px] text-gray-500 italic">Epoxy-based stain resistant grout in 'Driftwood'.</p>
                     </div>
                 </div>
                 <div class="bg-black text-white p-5 flex justify-between items-center shadow-[6px_6px_0px_#FF5722]">
                     <span class="mono text-[10px] font-bold uppercase italic tracking-widest">Total Investment</span>
                     <span class="text-3xl font-black italic">$4,700.00</span>
                 </div>
-                <button onclick="navigate('view-contract')" class="btn-main py-5 text-sm">Review & Sign Agreement</button>
+                <button onclick="navigate('view-contract')" class="btn-main py-5 text-sm">Review Agreement</button>
             </div>
         </div>
 
         <div id="view-contract" class="view-pane space-y-6">
             <div class="pro-card p-6">
-                <h2 class="font-black text-2xl italic uppercase mb-6 tracking-tighter">Fixed-Price Agreement</h2>
-                <div class="bg-gray-50 border-2 border-black p-4 h-48 overflow-y-auto mb-6 text-[11px] font-bold leading-relaxed border-dashed">
+                <h2 class="font-black text-2xl italic uppercase mb-6 tracking-tighter">Agreement Terms</h2>
+                <div class="bg-gray-50 border-2 border-black p-4 h-48 overflow-y-auto mb-6 text-[11px] font-bold border-dashed leading-relaxed">
                     <p class="mb-3">1. PERFORMANCE: Work performed according to TCNA standards.</p>
                     <p class="mb-3">2. MILESTONE PAYMENTS: Funds securely vaulted. Released to contractor solely upon photo-proof validation by homeowner.</p>
                     <p class="mb-3">3. MODIFICATIONS: Change orders required for any scope adjustments. Must be signed via ProLink.</p>
                     <p>4. WARRANTY: 1-Year limited workmanship warranty begins upon final ledger clearance.</p>
                 </div>
+                
                 <div class="space-y-4">
                     <input type="text" placeholder="NAME ON CARD" class="border-2 border-black p-3 w-full mono text-xs uppercase outline-none focus:border-[#FF5722]">
                     <div class="flex gap-2">
-                        <input type="text" placeholder="CARD NUMBER" class="border-2 border-black p-3 w-[70%] mono text-xs outline-none focus:border-[#FF5722]">
-                        <input type="text" placeholder="CVC" class="border-2 border-black p-3 w-[30%] mono text-xs outline-none focus:border-[#FF5722]">
+                        <input type="text" placeholder="CARD NUMBER" class="border-2 border-black p-3 w-[50%] mono text-xs outline-none focus:border-[#FF5722]">
+                        <input type="text" placeholder="EXP (MM/YY)" class="border-2 border-black p-3 w-[25%] mono text-xs outline-none focus:border-[#FF5722]">
+                        <input type="text" placeholder="CVC" class="border-2 border-black p-3 w-[25%] mono text-xs outline-none focus:border-[#FF5722]">
                     </div>
+                    
+                    <div class="relative">
+                        <canvas id="sig-canvas"></canvas>
+                        <div class="absolute top-2 left-2 pointer-events-none text-[8px] mono text-gray-400 uppercase font-bold">Draw Signature Below</div>
+                    </div>
+
                     <div class="secure-tooltip mt-4">
                         <span class="text-blue-500 text-lg leading-none">🛡️</span>
                         <p class="text-[10px] text-slate-500 font-medium leading-tight"><strong>AUTHORIZATION ONLY:</strong> A temporary hold is placed for the project value. Funds remain in your control and do not transfer until you explicitly approve timeline milestones.</p>
@@ -122,66 +130,62 @@
         </div>
 
         <div id="view-heartbeat" class="view-pane space-y-8">
-            
-            <section id="action-zone" class="space-y-4">
-                <h2 class="mono text-[11px] font-bold text-gray-500 uppercase tracking-widest px-1">Action Required</h2>
-                
-                <div id="card-payment" class="pro-card p-5 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 bg-[#FF5722] text-white px-3 py-1 mono text-[10px] font-bold italic shadow-sm">SQUARE SECURE</div>
-                    <h3 class="font-black text-xl mb-1 italic uppercase">Release Milestone Funds</h3>
-                    <p class="text-xs text-gray-500 mb-4 font-bold italic">Phase 1: Waterproofing & Inspection</p>
-                    
-                    <div class="flex items-center justify-between mb-4 bg-gray-50 p-4 border border-dashed border-gray-300">
-                        <div>
-                            <p class="text-[10px] mono text-gray-400 uppercase">Amount to Release</p>
-                            <p class="text-2xl font-black">$1,850.00</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-[10px] mono text-gray-400 uppercase tracking-tighter">Auth-Hold Status</p>
-                            <p class="text-[10px] font-bold text-green-600 uppercase">Vaulted ✓</p>
-                        </div>
-                    </div>
-                    
-                    <div class="flex items-start gap-3 bg-blue-50 p-3 border border-blue-200 mb-4">
-                        <span class="text-blue-900 font-bold leading-none">ⓘ</span>
-                        <p class="text-[10px] text-blue-900 leading-tight"><strong>Sign-Off:</strong> Mike verified the flood test on 2/20. Release now authorized.</p>
-                    </div>
+            <div class="flex justify-between items-end border-b border-gray-200 pb-2 px-1">
+                <h2 id="dynamic-action-title" class="mono text-[11px] font-bold text-gray-400 uppercase tracking-widest">Action Required</h2>
+                <button onclick="navigate('view-vault')" class="flex items-center gap-1 text-[10px] font-black uppercase hover:text-[#FF5722]">📁 Access Vault</button>
+            </div>
 
-                    <button onclick="approveItem('card-payment', 'Payment Released: Phase 1', '$1,850.00')" class="btn-main py-4 text-sm">Release Funds & Confirm</button>
+            <section id="section-actions" class="space-y-4">
+                <div id="card-payment" class="pro-card p-5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-[#FF5722] text-white px-3 py-1 mono text-[10px] font-bold italic">SQUARE SECURE</div>
+                    <h3 class="font-black text-xl mb-1 italic uppercase leading-none">Release Milestone 1</h3>
+                    <p class="text-[10px] text-gray-500 mb-4 font-bold italic">Phase 1: Waterproofing & Inspection ($1,850)</p>
+                    <button onclick="approveItem('card-payment', 'Payment Released: Phase 1', '$1,850.00', true)" class="btn-main py-4 text-sm">Verify & Release</button>
                 </div>
 
-                <div id="card-change-order" class="pro-card p-4 flex justify-between items-center bg-amber-50 border-amber-400 shadow-[4px_4px_0px_#2A4494]">
+                <div id="card-change-order" class="pro-card p-4 flex justify-between items-center bg-amber-50 border-amber-400">
                     <div class="max-w-[70%]">
-                        <h4 class="font-black text-xs uppercase tracking-tight">Pending Change Order #03</h4>
-                        <p class="text-[10px] text-gray-600 leading-tight font-bold">Custom niche tile upgrade (+ $180.00)</p>
+                        <h4 class="font-black text-[10px] uppercase">Change Order #03</h4>
+                        <p class="text-[9px] text-gray-600 font-bold uppercase italic tracking-tighter">Custom niche tile upgrade (+ $180.00)</p>
                     </div>
-                    <button onclick="approveItem('card-change-order', 'Change Order #03 Approved', '+$180.00')" class="bg-black text-white px-5 py-2 text-[10px] font-black uppercase active:scale-95 transition">Sign</button>
+                    <button onclick="approveItem('card-change-order', 'Change Order #03 Approved', '+$180.00', false)" class="bg-black text-white px-4 py-2 text-[10px] font-black uppercase">Sign</button>
+                </div>
+
+                <div id="card-final-release" class="hidden pro-card p-5 border-double border-4 border-black">
+                    <h3 class="font-black text-xl mb-1 italic uppercase leading-none">Final Project Release</h3>
+                    <p class="text-[10px] text-gray-500 mb-4 font-bold italic">Completion Balance ($2,850)</p>
+                    <button onclick="approveItem('card-final-release', 'Final Funds Released', '$2,850.00', true, true)" class="btn-main py-4 text-sm">Close Project</button>
+                </div>
+
+                <div id="card-referral" class="hidden pro-card p-6 border-l-[12px] border-[#FF5722]">
+                    <h3 class="font-black text-xl uppercase italic mb-1 tracking-tight">Refer a Friend</h3>
+                    <p class="text-[10px] text-gray-500 mb-4 italic font-bold uppercase tracking-tight leading-tight">Project complete. Share Mike's work with your network.</p>
+                    <div class="flex gap-2">
+                        <button class="flex-1 bg-black text-white py-3 font-black text-[10px] uppercase">Review</button>
+                        <button class="flex-1 bg-white border-2 border-black py-3 font-black text-[10px] uppercase">Share</button>
+                    </div>
                 </div>
             </section>
 
             <section class="space-y-4">
-                <div class="flex justify-between items-end px-1">
-                    <h2 class="mono text-[11px] font-bold text-gray-500 uppercase tracking-widest">Project Heartbeat</h2>
-                </div>
+                <h2 class="mono text-[11px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-200 pb-2">Project Heartbeat</h2>
                 
-                <div class="pro-card p-4 bg-gray-50 flex justify-between items-center border-dashed">
+                <div id="card-schedule" class="pro-card p-4 bg-gray-50 flex justify-between items-center border-dashed">
                     <div class="flex gap-3 items-center">
                         <span class="text-xl">📅</span>
                         <p class="text-[10px] font-black uppercase italic tracking-tighter">Next Arrival: Tomorrow @ 8:15 AM</p>
                     </div>
                 </div>
 
-                <div class="timeline-container mt-6">
+                <div class="timeline-container pt-4">
                     <div class="timeline-line"></div>
-                    <div id="dynamic-log"></div> <div class="timeline-item">
+                    <div id="dynamic-log"></div> 
+                    
+                    <div class="timeline-item">
                         <div class="timeline-dot dot-photo"></div>
                         <p class="mono text-[10px] text-gray-400 uppercase mb-2">Today @ 1:08 PM — PROOF OF WORK</p>
                         <div class="pro-card overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1589939705384-5185138a047a?auto=format&fit=crop&w=600&q=80" class="w-full h-40 object-cover grayscale">
-                            <div class="p-3 bg-white">
-                                <p class="text-xs font-bold uppercase italic tracking-tighter">Verified Install: Kerdi-Board</p>
-                                <p class="text-[10px] text-gray-500 font-bold">Captured at 123 Holland Rd. (Lat/Long Verified)</p>
-                            </div>
+                            <img src="https://images.unsplash.com/photo-1600585152220-90363fe7e115?auto=format&fit=crop&w=600&q=80" class="w-full h-40 object-cover grayscale">
                         </div>
                     </div>
 
@@ -189,7 +193,7 @@
                         <div class="timeline-dot dot-msg"></div>
                         <p class="mono text-[10px] text-gray-400 uppercase mb-2">Yesterday @ 4:30 PM — MESSAGE LOG</p>
                         <div class="bg-black text-white p-4 shadow-[4px_4px_0px_#CCC] text-xs italic leading-relaxed font-bold">
-                            "Flood test is holding perfectly. City inspector confirmed for tomorrow morning. Ready for your review in the app." — Mike
+                            "Flood test is holding perfectly. City inspector confirmed for tomorrow morning." — Mike
                         </div>
                     </div>
 
@@ -197,11 +201,7 @@
                         <div class="timeline-dot dot-photo"></div>
                         <p class="mono text-[10px] text-gray-400 uppercase mb-2">Feb 18 @ 9:15 AM — PROOF OF WORK</p>
                         <div class="pro-card overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1504307651254-35680f356f67?auto=format&fit=crop&w=600&q=80" class="w-full h-32 object-cover grayscale opacity-80">
-                            <div class="p-3 bg-gray-50">
-                                <p class="text-xs font-bold uppercase italic tracking-tighter">Phase 0: Demo Complete</p>
-                                <p class="text-[10px] text-gray-500 font-bold">Old pan removed. Slab prepped.</p>
-                            </div>
+                            <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=600&q=80" class="w-full h-32 object-cover grayscale opacity-80">
                         </div>
                     </div>
                 </div>
@@ -209,161 +209,125 @@
         </div>
 
         <div id="view-vault" class="view-pane space-y-6">
-            
-            <div id="vault-complete-ui" class="hidden space-y-6">
-                <div class="pro-card p-10 bg-blue-900 text-white text-center shadow-[8px_8px_0px_#FF5722]">
-                    <h2 class="text-4xl font-black italic uppercase leading-none mb-1 tracking-tighter">Project Ledger Closed</h2>
-                    <p class="mono text-[10px] font-black uppercase tracking-widest text-blue-300">Certified Archive Locked</p>
-                </div>
-                
-                <div class="pro-card p-6 bg-white border-l-[12px] border-[#FF5722]">
-                    <h3 class="font-black text-xl uppercase italic mb-2 tracking-tight">Refer Mike Sorrenson?</h3>
-                    <p class="text-[11px] text-gray-500 mb-6 italic font-bold">Satisfied with the build? Support Mike and help neighbors find verified pros by sharing your referral link.</p>
-                    <div class="flex gap-2">
-                        <button class="flex-1 bg-black text-white py-4 font-black text-[10px] uppercase">Leave Review</button>
-                        <button class="flex-1 bg-white border-2 border-black py-4 font-black text-[10px] uppercase">Refer Friend</button>
-                    </div>
-                </div>
-            </div>
-
+            <header>
+                <h2 class="text-3xl font-black italic uppercase tracking-tighter leading-none">Project Vault</h2>
+                <p id="vault-subtitle" class="mono text-[10px] font-bold text-gray-400 uppercase mt-2 tracking-widest">Digital Property Archive</p>
+            </header>
             <div class="space-y-3">
-                <div class="flex justify-between items-end mb-2">
-                    <h3 class="mono text-[11px] font-black text-gray-400 uppercase tracking-widest">Financial & Tax Export</h3>
-                    <span id="vault-pending-badge" class="bg-yellow-100 text-yellow-800 border border-yellow-800 px-2 py-1 mono text-[8px] font-bold uppercase">Docs Updating</span>
-                </div>
-                <div class="pro-card p-4 flex justify-between items-center bg-white hover:bg-gray-50 transition cursor-pointer">
-                    <p class="text-xs font-black uppercase italic">Final Financial Summary</p>
-                    <span class="text-xl">📄</span>
-                </div>
-                <div class="pro-card p-4 flex justify-between items-center bg-white hover:bg-gray-50 transition cursor-pointer">
-                    <p class="text-xs font-black uppercase italic">Executed Fixed-Price Agreement</p>
-                    <span class="text-xl">⚖️</span>
-                </div>
-                <div class="pro-card p-4 flex justify-between items-center bg-white hover:bg-gray-50 transition cursor-pointer">
-                    <p class="text-xs font-black uppercase italic">Verification Photo Log</p>
-                    <span class="text-xl">📸</span>
+                <div class="pro-card p-4 flex justify-between items-center bg-white"><p class="text-xs font-black uppercase italic">Executed Agreement</p><button class="mono text-[9px] border border-black px-2 py-1">DOWNLOAD</button></div>
+                <div class="pro-card p-4 flex justify-between items-center bg-white"><p class="text-xs font-black uppercase italic">Photo Verification Log</p><button class="mono text-[9px] border border-black px-2 py-1">ZIP ARCHIVE</button></div>
+                <div id="vault-tax-row" class="pro-card p-4 flex justify-between items-center bg-gray-50 opacity-60">
+                    <div>
+                        <p class="text-xs font-black uppercase italic">Closing Tax Ledger</p>
+                        <p id="tax-msg" class="text-[8px] mono text-gray-400 font-bold uppercase tracking-tight">Pending Completion...</p>
+                    </div>
+                    <span id="tax-status-badge" class="mono text-[8px] bg-gray-200 px-2 py-1 font-bold">LOCKED</span>
                 </div>
             </div>
-
-            <button onclick="navigate('view-heartbeat')" class="w-full bg-transparent border-2 border-black py-4 font-black text-[11px] uppercase tracking-widest text-black mt-8 hover:bg-gray-100">
-                ← Back to Heartbeat
-            </button>
+            <button onclick="navigate('view-heartbeat')" class="w-full bg-transparent border-2 border-black py-4 font-black text-[11px] uppercase mt-8">← Back</button>
         </div>
+
+        <footer class="pt-12 pb-8 text-center opacity-40">
+            <p class="mono text-[9px] uppercase font-bold tracking-[0.2em]">Powered by ProLink</p>
+            <p class="text-[8px] italic mt-1 font-bold uppercase">Secure Project Governance & Vaulting</p>
+        </footer>
 
     </main>
 
     <nav id="nav-footer" class="fixed bottom-6 inset-x-4 max-w-md mx-auto z-[100] flex gap-2 hidden">
-        <button class="flex-[3] bg-black text-white py-5 font-black text-[11px] uppercase tracking-widest shadow-2xl flex items-center justify-center gap-2 active:scale-95 transition">
-            <span class="text-lg leading-none">💬</span> Message Mike
-        </button>
-        <button id="btn-vault-toggle" onclick="navigate('view-vault')" class="flex-1 bg-white border-2 border-black py-5 font-black text-[11px] uppercase shadow-2xl flex items-center justify-center active:bg-gray-100 transition">
-            📁 VAULT
-        </button>
+        <button class="flex-[3] bg-black text-white py-5 font-black text-[11px] uppercase tracking-widest shadow-2xl">💬 Message Mike</button>
+        <button id="btn-vault-toggle" onclick="navigate('view-vault')" class="flex-1 bg-white border-2 border-black py-5 font-black text-[11px] uppercase shadow-2xl">📁 VAULT</button>
     </nav>
 
     <script>
-        // Tracks state to know what elements to show
         let isProjectComplete = false;
 
         function navigate(viewId) {
-            // Hide all views
             document.querySelectorAll('.view-pane').forEach(v => v.classList.remove('active'));
-            // Show target view
             document.getElementById(viewId).classList.add('active');
-            
             const status = document.getElementById('master-status');
             const footer = document.getElementById('nav-footer');
-            const vaultBtn = document.getElementById('btn-vault-toggle');
-
-            // Manage Top Badge & Footer visibility based on view/state
+            
             if(viewId === 'view-bid' || viewId === 'view-contract') {
-                status.innerText = "PROPOSAL";
-                status.className = "status-badge badge-proposal";
+                status.innerText = "PROPOSAL"; status.className = "status-badge badge-proposal";
                 footer.style.display = 'none';
+                if(viewId === 'view-contract') setTimeout(initSignature, 100);
             } else {
                 footer.style.display = 'flex';
-                
-                if (isProjectComplete) {
-                    status.innerText = "COMPLETE";
-                    status.className = "status-badge badge-complete";
-                } else {
-                    status.innerText = "IN-PROGRESS";
-                    status.className = "status-badge badge-progress";
-                }
-
-                // Toggle logic for the Vault button in the footer
-                if(viewId === 'view-vault') {
-                    vaultBtn.innerHTML = "← LOG";
-                    vaultBtn.setAttribute('onclick', "navigate('view-heartbeat')");
-                } else {
-                    vaultBtn.innerHTML = "📁 VAULT";
-                    vaultBtn.setAttribute('onclick', "navigate('view-vault')");
-                }
+                status.innerText = isProjectComplete ? "COMPLETE" : "IN-PROGRESS";
+                status.className = isProjectComplete ? "status-badge badge-complete" : "status-badge badge-progress";
+                document.getElementById('btn-vault-toggle').innerHTML = (viewId === 'view-vault') ? "← LOG" : "📁 VAULT";
             }
             window.scrollTo(0,0);
         }
 
-        function approveItem(cardId, title, amount) {
+        function initSignature() {
+            const canvas = document.getElementById('sig-canvas');
+            if(!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let drawing = false;
+            canvas.width = canvas.parentElement.offsetWidth; canvas.height = 120;
+            const stop = () => { drawing = false; ctx.beginPath(); };
+            const draw = (e) => {
+                if (!drawing) return;
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.clientX || e.touches[0].clientX) - rect.left;
+                const y = (e.clientY || e.touches[0].clientY) - rect.top;
+                ctx.lineWidth = 2; ctx.lineTo(x, y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x, y);
+            };
+            canvas.addEventListener('mousedown', () => drawing = true);
+            canvas.addEventListener('mouseup', stop);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('touchstart', (e) => { e.preventDefault(); drawing = true; });
+            canvas.addEventListener('touchend', stop);
+            canvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e); });
+        }
+
+        function approveItem(cardId, title, amount, triggersNext, isFinal = false) {
             const card = document.getElementById(cardId);
-            
-            // 1. Teleport Animation Out
             card.classList.add('teleport-out');
-            
             setTimeout(() => {
-                // 2. Hide Card from Action Zone
                 card.style.display = 'none';
-                
-                // 3. Create Timeline Entry
                 const log = document.getElementById('dynamic-log');
-                const timestamp = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                 const entry = document.createElement('div');
                 entry.className = "timeline-item";
                 entry.innerHTML = `
                     <div class="timeline-dot dot-action"></div>
-                    <p class="mono text-[10px] text-green-600 font-bold uppercase mb-2">Today @ ${timestamp} — VERIFIED ACTION</p>
-                    <div class="pro-card p-4 log-entry-approved bg-green-50 shadow-[4px_4px_0px_#166534] border-green-800">
+                    <p class="mono text-[10px] text-green-600 font-bold uppercase mb-2">Just Now — VERIFIED ACTION</p>
+                    <div class="pro-card p-4 log-entry-approved bg-green-50 border-green-800">
                         <p class="text-xs font-black uppercase italic">${title}</p>
-                        <p class="text-[10px] font-bold text-gray-600 mt-1">${amount} logged securely to Project Ledger.</p>
+                        <p class="text-[10px] font-bold text-gray-600 mt-1">${amount} logged to Ledger.</p>
                     </div>
                 `;
-                // 4. Inject at top of timeline
                 log.prepend(entry);
-
-                // 5. Check if Action Zone is empty
-                const remainingActions = document.querySelectorAll('#action-zone .pro-card:not([style*="display: none"])');
-                if (remainingActions.length === 0) {
-                    triggerProjectCompletion();
+                if(triggersNext && !isFinal) {
+                    const next = document.getElementById('card-final-release');
+                    next.classList.remove('hidden');
+                    next.classList.add('animate-[slideIn_0.4s_ease-out]');
                 }
-            }, 400); // Wait for CSS teleport animation to finish
+                if (isFinal) triggerProjectCompletion();
+            }, 400); 
         }
 
         function triggerProjectCompletion() {
             isProjectComplete = true;
+            document.getElementById('card-referral').classList.remove('hidden');
+            document.getElementById('master-status').innerText = "COMPLETE";
+            document.getElementById('master-status').className = "status-badge badge-complete";
+            document.getElementById('card-schedule').style.display = 'none';
+            document.getElementById('vault-subtitle').innerText = "Archived Property Record";
+            const taxRow = document.getElementById('vault-tax-row');
+            taxRow.classList.remove('opacity-60', 'bg-gray-50');
+            taxRow.classList.add('bg-white');
+            document.getElementById('tax-msg').innerText = "Finalized Ledger — Ready for Export";
+            document.getElementById('tax-msg').classList.add('text-green-600');
+            document.getElementById('tax-status-badge').innerText = "UNLOCKED";
+            document.getElementById('tax-status-badge').className = "mono text-[8px] bg-green-100 text-green-800 px-2 py-1 font-bold border border-green-800";
             
-            // Hide action zone container entirely
-            document.getElementById('action-zone').style.display = 'none';
-            
-            // Update Top Badge immediately
-            const status = document.getElementById('master-status');
-            status.innerText = "COMPLETE";
-            status.className = "status-badge badge-complete";
-            
-            // Update Vault Page contents dynamically
-            document.getElementById('vault-complete-ui').classList.remove('hidden');
-            document.getElementById('vault-pending-badge').style.display = 'none'; // Remove 'Docs Updating' badge
-            
-            // Optional: Inject a "Project Finished" capstone into the timeline
-            const log = document.getElementById('dynamic-log');
-            const entry = document.createElement('div');
-            entry.className = "timeline-item";
-            entry.innerHTML = `
-                <div class="timeline-dot bg-black border-black"></div>
-                <div class="bg-black text-white p-4 text-center mt-4">
-                    <p class="text-sm font-black uppercase italic tracking-widest">Project Ledger Closed</p>
-                    <p class="text-[10px] text-gray-400 mt-1 mono">All milestones validated & paid.</p>
-                </div>
-            `;
-            log.prepend(entry);
+            const dlBtn = document.createElement('button');
+            dlBtn.className = "mono text-[9px] border border-green-800 px-2 py-1 hover:bg-green-800 hover:text-white transition";
+            dlBtn.innerText = "TAX DOCS";
+            taxRow.appendChild(dlBtn);
         }
     </script>
 </body>
