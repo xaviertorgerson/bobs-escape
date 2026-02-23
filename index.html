@@ -247,7 +247,7 @@
                 <h2 id="dynamic-action-title" class="mono text-xs font-bold text-slate-500 uppercase tracking-widest">Project Dashboard</h2>
                 <button onclick="navigate('view-vault')" class="flex items-center gap-1.5 text-xs font-bold text-slate-600 uppercase hover:text-[#FF5722] transition-colors tracking-wide">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
-                    Access Vault
+                    Vault
                 </button>
             </div>
 
@@ -468,7 +468,7 @@
 
     <nav id="nav-footer" class="fixed bottom-4 inset-x-4 max-w-2xl mx-auto z-[100] flex gap-3 hidden">
         <button class="flex-[3] bg-slate-800 text-white rounded py-3.5 font-semibold text-sm shadow-[0_4px_12px_rgba(30,41,59,0.2)] hover:bg-slate-700 transition-colors border border-slate-700">Message Mike</button>
-        <button id="btn-vault-toggle" onclick="navigate('view-vault')" class="flex-1 btn-secondary py-3.5 text-sm bg-white/90 backdrop-blur">Access Vault</button>
+        <button id="btn-vault-toggle" onclick="navigate('view-vault')" class="flex-1 btn-secondary py-3.5 text-sm bg-white/90 backdrop-blur">Vault</button>
     </nav>
 
     <script>
@@ -488,7 +488,7 @@
                 footer.style.display = 'flex';
                 status.innerText = isProjectComplete ? "COMPLETE" : "ACTIVE";
                 status.className = isProjectComplete ? "status-badge badge-complete" : "status-badge badge-progress";
-                document.getElementById('btn-vault-toggle').innerHTML = (viewId === 'view-vault') ? "Back" : "Access Vault";
+                document.getElementById('btn-vault-toggle').innerHTML = (viewId === 'view-vault') ? "Back" : "Vault";
             }
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
