@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Architecture of Story — a course in narrative craft</title>
+<meta name="description" content="An interactive course in creative writing and narrative structure: from first principles to a finished draft.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f3efe4; --paper-2:#ebe4d4; --surf:#fbf8f0; --surf-2:#f6f1e6;
+  --ink:#1b1813; --ink-soft:#4b443c; --ink-faint:#786f5e; --ink-ghost:#a99e88;
+  --rule:#d3c8b1; --rule-soft:#e3dac8;
+  --red:#a23316; --red-deep:#7e2510; --red-wash:#f0e2d6;
+  --teal:#1f5048; --teal-deep:#163a34; --teal-wash:#dde7e2;
+  --ochre:#956613; --ochre-deep:#714c0c; --ochre-wash:#efe6cf;
+  --shadow:rgba(40,28,14,.16); --shadow-lg:rgba(40,28,14,.26);
+  --serif:"Spectral",Georgia,serif; --display:"Cormorant",Georgia,serif; --mono:"IBM Plex Mono",monospace;
+  --nav:300px; --measure:700px;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:18px;line-height:1.68;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:hidden;}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.04;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+
+#scrollbar{position:fixed;top:0;left:0;height:2px;width:0;z-index:120;background:var(--red);transition:width .08s linear;}
+
+/* ---------------- mobile bar ---------------- */
+#topbar{position:fixed;top:0;left:0;right:0;height:56px;z-index:100;display:none;align-items:center;gap:12px;
+  padding:0 16px;background:rgba(243,239,228,.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule);}
+#topbar .b{font-family:var(--display);font-weight:600;font-size:19px;flex:1;}
+#menuBtn{appearance:none;border:1px solid var(--rule);background:var(--surf);width:38px;height:38px;border-radius:7px;
+  font-size:16px;cursor:pointer;display:grid;place-items:center;color:var(--ink);}
+#overlay{display:none;position:fixed;inset:0;background:rgba(27,24,19,.46);z-index:89;backdrop-filter:blur(2px);}
+
+.app{display:flex;align-items:flex-start;}
+
+/* ---------------- sidebar ---------------- */
+#sidebar{position:sticky;top:0;height:100vh;width:var(--nav);flex:0 0 var(--nav);z-index:90;
+  background:var(--paper-2);border-right:1px solid var(--rule);display:flex;flex-direction:column;}
+.brand{padding:24px 24px 18px;border-bottom:1px solid var(--rule);cursor:pointer;}
+.brand .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.32em;text-transform:uppercase;color:var(--red);margin:0 0 9px;}
+.brand h1{font-family:var(--display);font-weight:600;font-size:25px;line-height:1.02;margin:0;letter-spacing:-.005em;}
+.brand .ring{display:flex;align-items:center;gap:10px;margin-top:14px;}
+.brand .ring svg{flex:0 0 auto;}
+.brand .ring span{font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);letter-spacing:.04em;line-height:1.3;}
+
+.searchwrap{padding:14px 18px 6px;}
+#search{width:100%;padding:8px 11px;border:1px solid var(--rule);border-radius:7px;background:var(--surf);
+  font-family:var(--mono);font-size:11.5px;color:var(--ink);}
+#search::placeholder{color:var(--ink-faint);}
+#search:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(162,51,22,.12);}
+
+#nav{flex:1;overflow-y:auto;padding:10px 14px 36px;scrollbar-width:thin;scrollbar-color:var(--rule) transparent;}
+#nav::-webkit-scrollbar{width:6px;}#nav::-webkit-scrollbar-thumb{background:var(--rule);border-radius:6px;}
+.phase{font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint);
+  padding:16px 12px 6px;display:flex;align-items:center;gap:8px;}
+.phase .pd{width:7px;height:7px;transform:rotate(45deg);flex:0 0 auto;}
+.navlink{display:flex;align-items:center;gap:10px;width:100%;border:none;background:none;text-align:left;cursor:pointer;
+  font-family:var(--serif);font-size:14.5px;color:var(--ink);padding:8px 12px;border-radius:7px;line-height:1.25;}
+.navlink:hover{background:var(--paper);}
+.navlink .n{font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);min-width:18px;}
+.navlink .t{flex:1;}
+.navlink .chk{width:15px;height:15px;border:1.4px solid var(--rule);border-radius:50%;flex:0 0 auto;display:grid;place-items:center;
+  font-size:9px;color:transparent;}
+.navlink.done .chk{background:var(--teal);border-color:var(--teal);color:#fff;}
+.navlink.active{background:var(--surf);box-shadow:inset 0 0 0 1px var(--rule);}
+.navlink.active .t{font-weight:500;}
+.navlink.active .n{color:var(--red);}
+.subnav{margin:0 0 6px 38px;padding-left:4px;border-left:1px solid var(--rule-soft);display:none;}
+.navlink.active + .subnav{display:block;}
+.subnav a{display:block;font-size:12.5px;color:var(--ink-faint);text-decoration:none;padding:4px 10px;border-radius:5px;line-height:1.3;}
+.subnav a:hover{color:var(--ink);background:var(--paper);}
+.navfoot{padding:12px 22px 18px;border-top:1px solid var(--rule);}
+.navfoot button{appearance:none;border:none;background:none;cursor:pointer;font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;color:var(--ink-faint);padding:0;}
+.navfoot button:hover{color:var(--red);}
+.navfoot span{display:block;font-family:var(--mono);font-size:9px;color:var(--ink-ghost);margin-top:6px;line-height:1.4;}
+
+/* ---------------- main / module shell ---------------- */
+main{flex:1;min-width:0;}
+.module{display:none;}
+.module.active{display:block;animation:fade .45s cubic-bezier(.2,.6,.2,1);}
+@keyframes fade{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+.inner{max-width:var(--measure);margin:0 auto;padding:54px 46px 40px;}
+.inner.wide{max-width:1040px;}
+
+/* module hero */
+.mhead{margin-bottom:30px;}
+.crumb{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);
+  display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.ptag{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:3px 9px;border-radius:20px;color:#fff;}
+.mhead h2{font-family:var(--display);font-weight:600;font-size:clamp(40px,6vw,62px);line-height:.98;letter-spacing:-.02em;margin:0;}
+.bigidea{font-family:var(--display);font-style:italic;font-size:clamp(20px,2.6vw,25px);color:var(--ink-soft);
+  margin:16px 0 0;line-height:1.34;max-width:34ch;}
+.takeaways{display:flex;flex-wrap:wrap;gap:10px;margin:26px 0 0;}
+.takeaway{display:flex;gap:9px;align-items:flex-start;background:var(--surf);border:1px solid var(--rule);border-radius:9px;
+  padding:9px 13px 9px 11px;font-size:13.5px;line-height:1.36;max-width:300px;}
+.takeaway .tk{font-family:var(--mono);font-size:11px;color:var(--red);flex:0 0 auto;margin-top:1px;}
+.hr{height:1px;background:var(--rule);margin:34px 0;border:none;}
+
+/* typography inside modules */
+.module h3{font-family:var(--display);font-weight:600;font-size:27px;letter-spacing:-.008em;margin:44px 0 4px;scroll-margin-top:30px;}
+.module h3 .h3n{font-family:var(--mono);font-size:12px;color:var(--red);letter-spacing:.06em;margin-right:10px;vertical-align:2px;}
+.module h4{font-family:var(--display);font-weight:600;font-size:20px;margin:26px 0 4px;}
+.lead{font-size:19px;}
+.module p{margin:0 0 16px;}
+.module a.inl{color:var(--red);text-underline-offset:2px;}
+.module a.inl:hover{color:var(--red-deep);}
+strong{font-weight:600;} em{font-style:italic;}
+code{font-family:var(--mono);font-size:.82em;background:var(--paper-2);padding:2px 6px;border-radius:4px;border:1px solid var(--rule-soft);}
+.module ul,.module ol{margin:0 0 18px;padding-left:1.25em;}
+.module li{margin:0 0 8px;}
+.module li::marker{color:var(--red);}
+
+/* ---------- components ---------- */
+.card{background:var(--surf);border:1px solid var(--rule);border-radius:12px;padding:22px 24px;}
+.cardgrid{display:grid;gap:16px;margin:24px 0;}
+.cg-2{grid-template-columns:repeat(2,1fr);} .cg-3{grid-template-columns:repeat(3,1fr);} .cg-4{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));}
+.card h4{margin:0 0 8px;}
+.card .ico{font-family:var(--display);font-weight:600;}
+
+.principle{display:flex;gap:16px;background:var(--surf);border:1px solid var(--rule);border-left:3px solid var(--red);border-radius:0 12px 12px 0;padding:20px 24px;margin:24px 0;}
+.principle .pn{font-family:var(--display);font-weight:700;font-size:40px;line-height:.9;color:var(--red);flex:0 0 auto;}
+.principle.teal{border-left-color:var(--teal);} .principle.teal .pn{color:var(--teal);}
+.principle p:last-child{margin-bottom:0;}
+
+.bigquote{font-family:var(--display);font-style:italic;font-weight:500;font-size:clamp(24px,3.4vw,32px);line-height:1.28;
+  text-align:center;color:var(--ink);margin:36px auto;max-width:24ch;position:relative;padding:0 10px;}
+.bigquote strong{color:var(--red);font-weight:600;font-style:normal;}
+
+.tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;padding:2px 8px;border-radius:20px;display:inline-block;}
+.tag.ext{background:var(--red-wash);color:var(--red-deep);} .tag.int{background:var(--teal-wash);color:var(--teal-deep);} .tag.both{background:var(--ochre-wash);color:var(--ochre-deep);}
+
+/* tables */
+.tbl{margin:22px 0;overflow-x:auto;border:1px solid var(--rule);border-radius:10px;}
+table{border-collapse:collapse;width:100%;background:var(--surf);font-size:14.5px;}
+th,td{text-align:left;padding:11px 15px;border-bottom:1px solid var(--rule-soft);vertical-align:top;line-height:1.4;}
+thead th{background:var(--ink);color:var(--paper);font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;font-weight:500;}
+tbody tr:last-child td{border-bottom:none;} tbody tr:nth-child(even){background:var(--surf-2);}
+td strong{color:var(--red-deep);}
+
+/* stepper */
+.stepper{margin:24px 0;border-left:2px solid var(--rule);padding-left:0;}
+.step{position:relative;padding:0 0 22px 52px;}
+.step::before{content:attr(data-n);position:absolute;left:-17px;top:-2px;width:32px;height:32px;border-radius:50%;
+  background:var(--surf);border:2px solid var(--red);color:var(--red);font-family:var(--mono);font-size:13px;font-weight:600;
+  display:grid;place-items:center;}
+.step:last-child{padding-bottom:0;}
+.step h4{margin:2px 0 4px;}
+.step p{margin:0;font-size:15.5px;color:var(--ink-soft);}
+
+/* horizontal flow (process pipeline) */
+.flow{display:flex;gap:0;margin:26px 0;flex-wrap:wrap;}
+.node{flex:1;min-width:140px;background:var(--surf);border:1px solid var(--rule);border-radius:10px;padding:16px 16px;position:relative;margin:0 14px 14px 0;}
+.node .nn{font-family:var(--mono);font-size:10.5px;color:var(--red);letter-spacing:.08em;}
+.node h4{margin:5px 0 5px;font-size:17px;}
+.node p{margin:0;font-size:13px;color:var(--ink-soft);line-height:1.45;}
+.node::after{content:"→";position:absolute;right:-13px;top:50%;transform:translateY(-50%);color:var(--ink-ghost);font-size:15px;z-index:2;}
+.node:last-child::after{display:none;}
+
+/* causality chain */
+.chain{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:14px 0;}
+.chnode{background:var(--surf);border:1.5px solid var(--ink);border-radius:8px;padding:8px 16px;font-family:var(--display);font-weight:600;font-size:18px;}
+.chlink{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--ink-faint);padding:0 2px;}
+.chain.weak .chnode{border-color:var(--ink-ghost);color:var(--ink-faint);border-style:dashed;}
+.chain.weak .chlink{color:var(--ink-ghost);}
+.chain.strong .chnode{border-color:var(--red);color:var(--ink);}
+.chain.strong .chlink{color:var(--red);font-weight:600;}
+
+/* want/need engine */
+.engine{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:18px;margin:26px 0;}
+.engine .pole{background:var(--surf);border:1px solid var(--rule);border-radius:12px;padding:18px 20px;}
+.engine .pole.want{border-top:3px solid var(--red);}
+.engine .pole.need{border-top:3px solid var(--teal);}
+.engine .pole .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;}
+.engine .pole.want .lbl{color:var(--red);} .engine .pole.need .lbl{color:var(--teal);}
+.engine .pole h4{margin:6px 0 6px;font-size:21px;}
+.engine .pole p{margin:0;font-size:13.5px;color:var(--ink-soft);line-height:1.45;}
+.engine .arrow{text-align:center;color:var(--ink-faint);}
+.engine .arrow .big{font-size:26px;color:var(--ochre);}
+.engine .arrow .cap{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;display:block;margin-top:4px;}
+
+/* tabs / framework explorer */
+.tabs{display:flex;flex-wrap:wrap;gap:7px;margin:22px 0 18px;}
+.tab{font-family:var(--mono);font-size:11.5px;letter-spacing:.03em;padding:8px 13px;border:1px solid var(--rule);background:var(--surf);
+  border-radius:20px;cursor:pointer;color:var(--ink-soft);}
+.tab:hover{border-color:var(--ink-faint);}
+.tab.active{background:var(--ink);color:var(--paper);border-color:var(--ink);}
+.explorer{background:var(--surf);border:1px solid var(--rule);border-radius:12px;padding:24px;}
+.explorer .ex-top{display:flex;justify-content:space-between;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:6px;}
+.explorer h4{margin:0;font-size:24px;}
+.explorer .best{font-family:var(--mono);font-size:11px;color:var(--teal-deep);background:var(--teal-wash);padding:4px 10px;border-radius:20px;}
+.explorer .ex-desc{font-size:15px;color:var(--ink-soft);margin:6px 0 16px;}
+.beatstrip{display:flex;flex-wrap:wrap;gap:7px;}
+.beat{font-size:12px;background:var(--paper);border:1px solid var(--rule);border-radius:7px;padding:6px 10px;position:relative;}
+.beat .bi{font-family:var(--mono);font-size:9px;color:var(--red);display:block;}
+
+/* matcher rows */
+.matcher{margin:18px 0;border:1px solid var(--rule);border-radius:10px;overflow:hidden;}
+.mrow{display:flex;align-items:center;gap:14px;padding:12px 16px;border-bottom:1px solid var(--rule-soft);cursor:pointer;background:var(--surf);}
+.mrow:last-child{border-bottom:none;}
+.mrow:hover{background:var(--surf-2);}
+.mrow .goal{flex:1;font-size:15px;}
+.mrow .fw{font-family:var(--mono);font-size:12px;color:var(--red-deep);font-weight:600;}
+.mrow .go{color:var(--ink-ghost);font-size:13px;}
+
+/* story arc viz */
+.arcwrap{background:var(--surf);border:1px solid var(--rule);border-radius:12px;padding:18px 18px 18px;margin:24px 0;}
+.arc-svg{width:100%;height:auto;display:block;}
+.arc-svg .curve{fill:none;stroke:var(--ink);stroke-width:3;stroke-linejoin:round;stroke-linecap:round;}
+.arc-svg .area{stroke:none;}
+.arc-svg .axis{stroke:var(--rule);stroke-width:1;}
+.arc-svg .b1{fill:rgba(162,51,22,.05);} .arc-svg .b2{fill:rgba(31,80,72,.055);} .arc-svg .b3{fill:rgba(149,102,19,.085);}
+.arc-svg .sep{stroke:var(--rule);stroke-width:1;stroke-dasharray:3 4;}
+.arc-svg .actlbl{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;fill:var(--ink-faint);text-anchor:middle;}
+.arc-svg .axhint{font-family:var(--mono);font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;fill:var(--ink-ghost);}
+.beatdot{fill:var(--surf);stroke:var(--red);stroke-width:2.5;cursor:pointer;transition:r .15s,fill .15s;}
+.beatdot:hover,.beatdot.sel{fill:var(--red);r:9;}
+.beatlbl{font-family:var(--mono);font-size:9.5px;fill:var(--ink-soft);}
+.arc-readout{display:flex;gap:14px;align-items:flex-start;margin-top:6px;padding-top:14px;border-top:1px solid var(--rule-soft);min-height:54px;}
+.arc-readout .rn{font-family:var(--mono);font-size:11px;color:var(--red);padding-top:3px;}
+.arc-readout h4{margin:0 0 3px;font-size:18px;}
+.arc-readout p{margin:0;font-size:14px;color:var(--ink-soft);}
+
+/* sparkline cards (arc types) */
+.spark{width:100%;height:56px;display:block;margin-bottom:2px;}
+.spark path{fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
+.spark line{stroke-width:1;}
+.sparkcap{font-family:var(--mono);font-size:8.5px;letter-spacing:.03em;color:var(--ink-faint);display:block;margin:0 0 8px;text-transform:uppercase;}
+
+/* escalation */
+.escal{width:100%;height:auto;display:block;margin:8px 0 4px;}
+
+/* length scale */
+.lenscale{background:var(--surf);border:1px solid var(--rule);border-radius:12px;padding:24px 26px;margin:24px 0;}
+.lenrow{display:flex;align-items:center;gap:16px;margin:0 0 13px;}
+.lenrow:last-of-type{margin-bottom:0;}
+.lenname{flex:0 0 118px;text-align:right;}
+.lenname .ll{font-family:var(--display);font-weight:600;font-size:17px;display:block;line-height:1.05;}
+.lenname .lw{font-family:var(--mono);font-size:9.5px;color:var(--ink-faint);}
+.lenbar{height:14px;border-radius:7px;background:linear-gradient(90deg,var(--red),var(--ochre));min-width:8px;box-shadow:inset 0 -1px 2px rgba(0,0,0,.06);}
+.lennote{font-size:13px;color:var(--ink-soft);margin:16px 0 0;border-top:1px solid var(--rule-soft);padding-top:13px;}
+
+/* funnel (revision layers) */
+.funnel{margin:24px 0;}
+.flayer{margin:0 auto 10px;background:var(--surf);border:1px solid var(--rule);border-top:3px solid var(--red);border-radius:8px;padding:14px 20px;}
+.flayer .fl{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--red);}
+.flayer h4{margin:4px 0 4px;font-size:18px;} .flayer p{margin:0;font-size:14px;color:var(--ink-soft);}
+.flayer:nth-child(1){width:100%;} .flayer:nth-child(2){width:78%;border-top-color:var(--ochre);} .flayer:nth-child(2) .fl{color:var(--ochre);}
+.flayer:nth-child(3){width:56%;border-top-color:var(--teal);} .flayer:nth-child(3) .fl{color:var(--teal);}
+
+/* warn cards */
+.warn{background:var(--surf);border:1px solid var(--rule);border-left:3px solid var(--ochre);border-radius:0 9px 9px 0;padding:12px 16px;font-size:14.5px;}
+.warn b{color:var(--ochre-deep);}
+
+/* checklist */
+.checklist{list-style:none;padding:0;margin:18px 0;}
+.checklist li{padding-left:32px;position:relative;margin-bottom:9px;font-size:15.5px;cursor:pointer;user-select:none;transition:color .15s;}
+.checklist li::before{content:"";position:absolute;left:0;top:3px;width:18px;height:18px;border:1.5px solid var(--red);border-radius:4px;display:grid;place-items:center;font-size:11px;line-height:1;color:transparent;transition:background .15s,border-color .15s;}
+.checklist li:hover::before{background:var(--red-wash);}
+.checklist li.checked::before{content:"✓";background:var(--teal);border-color:var(--teal);color:#fff;}
+.checklist li.checked{color:var(--ink-faint);text-decoration:line-through;text-decoration-color:var(--rule);}
+.checklist li:focus-visible{outline:2px solid var(--red);outline-offset:3px;border-radius:3px;}
+
+/* workshop / practice */
+.workshop{margin:48px 0 0;background:linear-gradient(180deg,var(--surf),var(--surf-2));border:1px solid var(--rule);border-radius:14px;padding:24px 26px 20px;}
+.ws-head{font-family:var(--display);font-weight:600;font-size:24px;display:flex;align-items:center;gap:11px;margin:0;}
+.ws-head .ws-i{width:30px;height:30px;border-radius:50%;background:var(--red);color:#fff;display:grid;place-items:center;font-size:14px;flex:0 0 auto;}
+.ws-sub{font-size:14.5px;color:var(--ink-soft);margin:8px 0 18px;}
+.ws-prompt{margin:0 0 16px;}
+.ws-prompt label{display:block;font-size:15px;font-weight:500;margin:0 0 7px;line-height:1.42;}
+.ws-prompt label .pq{font-family:var(--mono);font-size:11px;color:var(--red);margin-right:9px;}
+.ws-prompt textarea{width:100%;min-height:72px;resize:vertical;border:1px solid var(--rule);border-radius:9px;background:var(--paper);font-family:var(--serif);font-size:15.5px;line-height:1.5;color:var(--ink);padding:11px 13px;}
+.ws-prompt textarea::placeholder{color:var(--ink-ghost);}
+.ws-prompt textarea:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(162,51,22,.1);background:#fff;}
+.ws-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:8px;}
+.ws-status{font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;color:var(--ink-faint);}
+.ws-status.saved{color:var(--teal);}
+.ws-clear{font-family:var(--mono);font-size:10.5px;border:none;background:none;color:var(--ink-faint);cursor:pointer;text-decoration:underline;text-underline-offset:2px;padding:0;}
+.ws-clear:hover{color:var(--red);}
+.homenote{text-align:center;font-family:var(--mono);font-size:11px;letter-spacing:.03em;color:var(--ink-faint);margin:34px 0 0;line-height:1.5;}
+
+/* tell vs show */
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0;}
+.vs .v{border-radius:10px;padding:16px 18px;font-size:15px;}
+.vs .tell{background:var(--surf-2);border:1px solid var(--rule);}
+.vs .show{background:var(--teal-wash);border:1px solid #bcd0c8;}
+.vs .vl{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:7px;}
+.vs .tell .vl{color:var(--ink-faint);} .vs .show .vl{color:var(--teal-deep);}
+
+/* prev / next */
+.prevnext{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:50px 0 0;}
+.pn{display:block;text-align:left;border:1px solid var(--rule);background:var(--surf);border-radius:12px;padding:16px 20px;cursor:pointer;text-decoration:none;color:var(--ink);transition:border-color .18s,transform .18s;}
+.pn:hover{border-color:var(--red);transform:translateY(-2px);}
+.pn .d{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);}
+.pn .tt{font-family:var(--display);font-weight:600;font-size:20px;margin-top:3px;}
+.pn.next{text-align:right;}
+.pn.disabled{opacity:.4;pointer-events:none;}
+
+.complete{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:34px;padding-top:22px;border-top:1px dashed var(--rule);}
+.btn{font-family:var(--mono);font-size:12px;letter-spacing:.04em;border:1.5px solid var(--teal);background:var(--teal);color:#fff;
+  padding:10px 18px;border-radius:8px;cursor:pointer;}
+.btn.ghost{background:none;color:var(--teal);}
+.btn.done{background:var(--teal-deep);border-color:var(--teal-deep);}
+
+/* ============ HOME / MAP ============ */
+.home-hero{text-align:center;padding:8px 0 8px;}
+.home-hero .k{font-family:var(--mono);font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--red);margin:0 0 22px;}
+.home-hero h2{font-family:var(--display);font-weight:600;font-size:clamp(48px,8vw,84px);line-height:.95;letter-spacing:-.022em;margin:0;}
+.home-hero .sf{font-family:var(--display);font-style:italic;font-size:clamp(19px,2.6vw,25px);color:var(--ink-soft);margin:20px auto 0;max-width:30ch;}
+.fleuron{color:var(--red);font-size:22px;letter-spacing:.5em;margin:26px 0 0;}
+
+.laws{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:14px 0;}
+.law{background:var(--surf);border:1px solid var(--rule);border-radius:12px;padding:18px 16px;text-align:center;}
+.law .ln{font-family:var(--display);font-weight:700;font-size:30px;color:var(--red);line-height:1;}
+.law .lt{font-weight:600;font-size:15px;margin-top:6px;}
+.law .ld{font-size:12.5px;color:var(--ink-soft);margin-top:5px;line-height:1.4;}
+
+.maptitle{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint);
+  display:flex;align-items:center;gap:14px;margin:48px 0 20px;}
+.maptitle::before,.maptitle::after{content:"";flex:1;height:1px;background:var(--rule);}
+
+.map{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.mapcol .mch{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:6px 0;margin-bottom:10px;
+  border-bottom:2px solid;display:flex;align-items:center;gap:7px;}
+.mapnode{display:block;width:100%;text-align:left;border:1px solid var(--rule);background:var(--surf);border-radius:10px;
+  padding:14px 15px;margin-bottom:10px;cursor:pointer;transition:transform .16s,border-color .16s,box-shadow .16s;}
+.mapnode:hover{transform:translateY(-3px);border-color:var(--red);box-shadow:0 10px 22px -14px var(--shadow-lg);}
+.mapnode .mn{font-family:var(--mono);font-size:9.5px;color:var(--ink-faint);}
+.mapnode h4{font-family:var(--display);font-weight:600;font-size:19px;margin:3px 0 3px;line-height:1.05;}
+.mapnode p{margin:0;font-size:12.5px;color:var(--ink-soft);line-height:1.4;}
+.mapnode .role{font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--red);}
+
+.paths{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:14px 0;}
+.pathcard{border:1px solid var(--rule);background:var(--surf);border-radius:12px;padding:20px 22px;}
+.pathcard h4{font-family:var(--display);font-weight:600;font-size:21px;margin:0 0 4px;}
+.pathcard .pm{font-size:13px;color:var(--ink-soft);margin:0 0 12px;}
+.pathcard .plinks{display:flex;flex-wrap:wrap;gap:6px;}
+.pathcard .pl{font-family:var(--mono);font-size:10.5px;border:1px solid var(--rule);border-radius:20px;padding:4px 10px;cursor:pointer;color:var(--ink-soft);}
+.pathcard .pl:hover{border-color:var(--red);color:var(--red-deep);}
+
+.module .endmark{text-align:center;color:var(--red);font-size:22px;letter-spacing:.5em;margin:46px 0 0;}
+
+/* resources */
+.resgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin:24px 0;}
+.rescard h4{margin:0 0 10px;color:var(--red-deep);font-size:18px;}
+.rescard ul{list-style:none;padding:0;margin:0;}
+.rescard li{margin-bottom:7px;font-size:14px;line-height:1.4;}
+.rescard a{color:var(--red);text-decoration:none;border-bottom:1px solid var(--rule);}
+.rescard a:hover{color:var(--red-deep);border-color:var(--red);}
+
+#toTop{position:fixed;right:22px;bottom:22px;z-index:80;width:42px;height:42px;border-radius:50%;border:1px solid var(--rule);
+  background:var(--surf);color:var(--red);font-size:16px;cursor:pointer;box-shadow:0 8px 18px -10px var(--shadow-lg);
+  opacity:0;transform:translateY(10px);transition:.25s;display:grid;place-items:center;}
+#toTop.show{opacity:1;transform:none;}
+
+/* ---------- responsive ---------- */
+@media (max-width:1100px){ :root{--nav:270px;} .map,.laws{grid-template-columns:repeat(2,1fr);} .paths{grid-template-columns:1fr;} }
+@media (max-width:860px){
+  body{font-size:17px;}
+  #topbar{display:flex;} #overlay.show{display:block;}
+  #sidebar{position:fixed;top:0;left:0;transform:translateX(-100%);transition:transform .3s cubic-bezier(.4,0,.2,1);
+    width:330px;max-width:88vw;box-shadow:0 0 60px rgba(27,24,19,.3);}
+  #sidebar.open{transform:translateX(0);}
+  .inner{padding:74px 22px 30px;}
+  .cg-2,.cg-3,.engine,.vs,.prevnext,.resgrid{grid-template-columns:1fr;}
+  .engine .arrow{transform:rotate(90deg);}
+  .laws{grid-template-columns:1fr 1fr;} .map{grid-template-columns:1fr;}
+  .node::after{content:"↓";right:auto;left:50%;top:auto;bottom:-12px;transform:translateX(-50%);}
+  .pn.next{text-align:left;}
+}
+@media (max-width:520px){ .laws{grid-template-columns:1fr;} .vs{grid-template-columns:1fr;} .lenname{flex-basis:96px;} .lenname .ll{font-size:15px;} }
+</style>
+</head>
+<body>
+<div id="scrollbar"></div>
+
+<header id="topbar">
+  <button id="menuBtn" aria-label="Open menu">☰</button>
+  <span class="b">The Architecture of Story</span>
+</header>
+<div id="overlay"></div>
+
+<div class="app">
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside id="sidebar">
+    <div class="brand" data-go="home">
+      <p class="k">Creative Writing · Narrative Craft</p>
+      <h1>The Architecture<br>of Story</h1>
+      <div class="ring">
+        <svg width="34" height="34" viewBox="0 0 34 34"><circle cx="17" cy="17" r="14" fill="none" stroke="var(--rule)" stroke-width="4"/><circle id="ringfg" cx="17" cy="17" r="14" fill="none" stroke="var(--teal)" stroke-width="4" stroke-linecap="round" stroke-dasharray="88" stroke-dashoffset="88" transform="rotate(-90 17 17)"/></svg>
+        <span id="ringtxt">0 of 10 lessons<br>complete</span>
+      </div>
+    </div>
+    <div class="searchwrap"><input id="search" type="text" placeholder="search the course…" autocomplete="off" spellcheck="false"></div>
+    <nav id="nav" aria-label="Course navigation"></nav>
+    <div class="navfoot"><button id="resetBtn">↺ Reset progress</button><span>Progress is saved locally in this browser.</span></div>
+  </aside>
+
+  <!-- ===================== MAIN ===================== -->
+  <main id="main">
+
+    <!-- ============ HOME ============ -->
+    <section class="module" id="home" data-title="Course Map">
+      <div class="inner wide">
+        <div class="home-hero">
+          <p class="k">A Guide to Creative Writing &amp; Narrative Structure</p>
+          <h2>The Architecture<br>of Story</h2>
+          <p class="sf">Learn how stories are built — from the first principle to the finished draft.</p>
+          <div class="fleuron">❦</div>
+        </div>
+
+        <div class="bigquote">A story is a system in which a character under pressure makes choices — and those choices <strong>change them.</strong></div>
+
+        <div class="maptitle">The five laws beneath everything</div>
+        <div class="laws">
+          <div class="law"><div class="ln">1</div><div class="lt">Therefore, not “and then”</div><div class="ld">Every beat is caused by the last.</div></div>
+          <div class="law"><div class="ln">2</div><div class="lt">Conflict is story</div><div class="ld">No obstacle, no story.</div></div>
+          <div class="law"><div class="ln">3</div><div class="lt">Want vs. Need</div><div class="ld">Meaning lives in the gap.</div></div>
+          <div class="law"><div class="ln">4</div><div class="lt">Show, don’t tell</div><div class="ld">Render through sense &amp; act.</div></div>
+          <div class="law"><div class="ln">5</div><div class="lt">Finish the draft</div><div class="ld">Done beats perfect.</div></div>
+        </div>
+
+        <div class="maptitle">The course, end to end</div>
+        <div class="map" id="coursemap"><!-- built by JS --></div>
+
+        <div class="maptitle">Pick a path</div>
+        <div class="paths">
+          <div class="pathcard">
+            <h4>I’m writing a short story</h4>
+            <p class="pm">One episode, one emotion. Tight constraints.</p>
+            <div class="plinks"><span class="pl" data-go="first-principles">First Principles</span><span class="pl" data-go="conflict">Conflict</span><span class="pl" data-go="forms">The Short Story</span><span class="pl" data-go="craft">Craft</span></div>
+          </div>
+          <div class="pathcard">
+            <h4>I’m writing a novel</h4>
+            <p class="pm">The long game — arcs, subplots, momentum.</p>
+            <div class="plinks"><span class="pl" data-go="character">Character</span><span class="pl" data-go="structure">Structure</span><span class="pl" data-go="process">The Process</span><span class="pl" data-go="revision">Revision</span></div>
+          </div>
+          <div class="pathcard">
+            <h4>I’m writing a screenplay</h4>
+            <p class="pm">Behaviour only — the camera can’t hear thoughts.</p>
+            <div class="plinks"><span class="pl" data-go="structure">Save the Cat</span><span class="pl" data-go="craft">Dialogue</span><span class="pl" data-go="forms">The Screenplay</span></div>
+          </div>
+        </div>
+        <p class="homenote">✎ Every lesson ends with a “Your turn” workbook. Your answers, ticked checklists, and progress all save automatically in this browser.</p>
+      </div>
+    </section>
+    <section class="module" id="first-principles" data-title="First Principles" data-phase="Foundations" data-lesson="1">
+      <div class="inner">
+        <div class="mhead"></div>
+        <p class="lead">Before any framework, four truths. Every technique in this course is downstream of them — if you remember only this lesson, you can still write a real story.</p>
+
+        <h3 id="fp-def"><span class="h3n">1.1</span>What a story actually is</h3>
+        <p>Strip away genre, length, and medium and every story reduces to one thing:</p>
+        <div class="bigquote">A character wants something. Something <strong>stands in the way.</strong> The pursuit forces choices that change them — or fail to.</div>
+        <p>That is the irreducible core. A travelogue of events is <em>not</em> a story; a character pursuing a goal against resistance <strong>is</strong>. Every element you’ll learn exists to serve that core.</p>
+
+        <h3 id="fp-cause"><span class="h3n">1.2</span>Causality: “therefore,” not “and then”</h3>
+        <p>The single most useful rule of thumb in storytelling. A weak plot is a list of events. A strong plot is a chain of consequences. Watch the difference:</p>
+        <div class="card">
+          <p style="margin:0 0 6px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint)">A sequence — flat</p>
+          <div class="chain weak"><span class="chnode">This</span><span class="chlink">and then</span><span class="chnode">that</span><span class="chlink">and then</span><span class="chnode">that</span></div>
+          <p style="margin:16px 0 6px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--red)">A story — driven</p>
+          <div class="chain strong"><span class="chnode">This</span><span class="chlink">therefore →</span><span class="chnode">that</span><span class="chlink">but →</span><span class="chnode">this</span></div>
+        </div>
+        <p>Each event must be the <strong>consequence of a character’s choice</strong>, not a random next thing. Causality is what produces suspense. When you outline, audit every join: if only “and then” fits, you have a sequence, not a story.</p>
+
+        <h3 id="fp-conflict"><span class="h3n">1.3</span>Conflict <em>is</em> story</h3>
+        <p>Every story, underneath, asks one question:</p>
+        <div class="bigquote">Will the protagonist overcome their obstacles to <strong>get what they want?</strong></div>
+        <p>Remove the obstacle and you remove the story. Conflict isn’t a flaw to minimise — it is the thing the reader came for.</p>
+
+        <h3 id="fp-wantneed"><span class="h3n">1.4</span>Want vs. Need — where meaning comes from</h3>
+        <p>The deepest engine in fiction is the gap between what a character chases and what they actually require.</p>
+        <div class="engine">
+          <div class="pole want"><div class="lbl">Want · external</div><h4>What they think they want</h4><p>A concrete, pursuable goal. Drives the plot. Often built on a lie they tell themselves.</p></div>
+          <div class="arrow"><div class="big">⇢</div><span class="cap">the story<br>closes the gap</span></div>
+          <div class="pole need"><div class="lbl">Need · internal</div><h4>What they actually need</h4><p>A deeper truth about themselves or the world. Drives the arc. Learning it unlocks the ending.</p></div>
+        </div>
+        <p>The classic shape: chase the <strong>Want</strong>, discover it rested on a lie, learn the <strong>Need</strong>. <em>Inside Out’s</em> Joy <em>wants</em> Riley always happy; she <em>needs</em> to learn every emotion matters. Gatsby <em>wants</em> Daisy; he <em>needs</em> to learn the past can’t be bought — and never learns it (a negative arc). External plot and internal growth aren’t two things; they’re one engine seen from two sides.</p>
+      </div>
+    </section>
+
+    <!-- ============ 2 · ELEMENTS ============ -->
+    <section class="module" id="elements" data-title="The Seven Elements" data-phase="Foundations" data-lesson="2">
+      <div class="inner">
+        <div class="mhead"></div>
+        <p class="lead">If first principles are the physics, these are the parts list — the seven components nearly every story is assembled from. Each gets its own job; the load-bearing ones get their own lessons.</p>
+        <div class="cardgrid cg-3">
+          <div class="card"><span class="tag both">why you write it</span><h4>Theme</h4><p>The idea or feeling underneath — usually the truth your protagonist’s <em>Need</em> points toward. Don’t state it; weave it through and let readers find it.</p></div>
+          <div class="card"><span class="tag int">the life-force</span><h4>Character</h4><p>Personalities and their collisions generate conflict and drive plot. <a class="inl" data-go="character">Lesson 3 →</a></p></div>
+          <div class="card"><span class="tag ext">the world</span><h4>Setting</h4><p>Time, place, institutions. Deliver it in drips woven through action, never in dumps.</p></div>
+          <div class="card"><span class="tag ext">what happens</span><h4>Plot</h4><p>Rising stakes toward an inevitable climax, bound by the law of causality. <a class="inl" data-go="structure">Lesson 5 →</a></p></div>
+          <div class="card"><span class="tag both">the tension</span><h4>Conflict</h4><p>Internal, external, or both — the source of all momentum. <a class="inl" data-go="conflict">Lesson 4 →</a></p></div>
+          <div class="card"><span class="tag int">the lens</span><h4>Point of View</h4><p>Whose eyes we watch through — it changes intimacy, reliability, even which story gets told. <a class="inl" data-go="craft">Lesson 7 →</a></p></div>
+          <div class="card"><span class="tag both">your voice</span><h4>Style</h4><p>Pacing, tone, word choice. No single “correct” one. <a class="inl" data-go="craft">Lesson 7 →</a></p></div>
+        </div>
+        <div class="principle"><div class="pn">!</div><div><p style="margin:0"><strong>Diagnostic rule of thumb.</strong> When a draft feels flat, find which of the seven is underpowered. Nine times out of ten it’s conflict (too little) or causality (too loose).</p></div></div>
+      </div>
+    </section>
+
+    <!-- ============ 3 · CHARACTER ============ -->
+    <section class="module" id="character" data-title="Character" data-phase="The Building Blocks" data-lesson="3">
+      <div class="inner">
+        <div class="mhead"></div>
+        <p class="lead">Character is the engine: the protagonist should shape the plot, and the plot should shape the protagonist. Build them in this order.</p>
+
+        <h3 id="ch-build"><span class="h3n">3.1</span>The build order</h3>
+        <div class="stepper">
+          <div class="step" data-n="1"><h4>Wants &amp; Needs</h4><p>Start here. What they <em>think</em> they want vs. what they truly need — the distance between is the shape of the inner journey.</p></div>
+          <div class="step" data-n="2"><h4>Strengths &amp; Flaws</h4><p>Strengths make them <em>capable</em> of winning; flaws make them <em>relatable</em> and create real risk of failure. The reader must believe they could fail.</p></div>
+          <div class="step" data-n="3"><h4>The necessary opponent</h4><p>Define the hero against others. The sharpest antagonist is the one best able to attack the hero’s deepest weakness — and who does so relentlessly.</p></div>
+          <div class="step" data-n="4"><h4>Foils &amp; secondary cast</h4><p>A web in which each character defines the others. A foil throws the hero’s qualities into relief.</p></div>
+          <div class="step" data-n="5"><h4>Look, behaviour, mannerisms</h4><p>Mannerisms are “show, don’t tell” in action — a braid-tug signals nerves without a word of narration.</p></div>
+          <div class="step" data-n="6"><h4>Research their world</h4><p>Trade, slang, class, culture — until authentic detail surfaces. Consider sensitivity readers as research partners.</p></div>
+        </div>
+
+        <h3 id="ch-arc"><span class="h3n">3.2</span>The three arcs</h3>
+        <p>Must a protagonist change? Not always — but they must be <strong>tested</strong>, and the reader must feel movement.</p>
+        <div class="cardgrid cg-3">
+          <div class="card">
+            <svg class="spark" viewBox="0 0 140 58"><line x1="10" y1="50" x2="130" y2="50" stroke="var(--rule-soft)"/><path d="M12 47 C 56 45, 80 17, 128 9" stroke="var(--teal)"/><circle cx="12" cy="47" r="3" fill="var(--rule)"/><circle cx="128" cy="9" r="3.6" fill="var(--teal)"/></svg>
+            <span class="sparkcap">starts low · ends transformed</span>
+            <h4>Positive</h4><p>Learns the Need, overcomes the flaw. The most common shape. <em>(most heroes)</em></p>
+          </div>
+          <div class="card">
+            <svg class="spark" viewBox="0 0 140 58"><line x1="10" y1="50" x2="130" y2="50" stroke="var(--rule-soft)"/><path d="M12 38 C 42 14, 62 11, 80 19 C 100 30, 116 48, 128 52" stroke="var(--red)"/><circle cx="12" cy="38" r="3" fill="var(--rule)"/><circle cx="128" cy="52" r="3.6" fill="var(--red)"/></svg>
+            <span class="sparkcap">rises · then falls further</span>
+            <h4>Negative</h4><p>Fails to learn it; destroyed by the flaw. <em>(Gatsby, Macbeth)</em></p>
+          </div>
+          <div class="card">
+            <svg class="spark" viewBox="0 0 140 58"><line x1="10" y1="50" x2="130" y2="50" stroke="var(--rule-soft)"/><path d="M12 23 L128 23" stroke="var(--ochre)"/><path d="M12 47 C 60 47, 96 30, 128 26" stroke="var(--ochre)" stroke-opacity=".45" stroke-dasharray="3 3"/><circle cx="128" cy="23" r="3.6" fill="var(--ochre)"/></svg>
+            <span class="sparkcap">hero steady — world shifts</span>
+            <h4>Flat</h4><p>Hero holds steady (solid) and changes the <em>world</em> around them (dashed). <em>(Katniss, Atticus)</em></p>
+          </div>
+        </div>
+
+        <h3 id="ch-gmc"><span class="h3n">3.3</span>A compact frame: G·M·C</h3>
+        <div class="cardgrid cg-3">
+          <div class="card"><span class="ico" style="color:var(--red)">G</span><h4>Goal</h4><p>What they’re pursuing (the Want).</p></div>
+          <div class="card"><span class="ico" style="color:var(--ochre)">M</span><h4>Motivation</h4><p>Why they want it.</p></div>
+          <div class="card"><span class="ico" style="color:var(--teal)">C</span><h4>Conflict</h4><p>What stands in the way.</p></div>
+        </div>
+        <p>State G·M·C for your protagonist <em>and</em> your antagonist and you have the skeleton of a dramatic situation.</p>
+      </div>
+    </section>
+
+    <!-- ============ 4 · CONFLICT ============ -->
+    <section class="module" id="conflict" data-title="Conflict" data-phase="The Building Blocks" data-lesson="4">
+      <div class="inner">
+        <div class="mhead"></div>
+        <p class="lead">Conflict is the fuel — it converts a goal into a story. Master two axes: the internal/external split, and the seven recurring types.</p>
+
+        <h3 id="co-axes"><span class="h3n">4.1</span>Internal &amp; external — use both</h3>
+        <div class="cardgrid cg-2">
+          <div class="card" style="border-top:3px solid var(--red)"><span class="tag ext">external</span><h4>The world pushes back</h4><p>A rival, a storm, a corrupt system. The visible obstacle.</p></div>
+          <div class="card" style="border-top:3px solid var(--teal)"><span class="tag int">internal</span><h4>The self pushes back</h4><p>A fear, a moral dilemma, a decision that threatens who they are.</p></div>
+        </div>
+        <div class="principle teal"><div class="pn">↔</div><div><p style="margin:0"><strong>Let the external dramatise the internal.</strong> Cheryl Strayed’s brutal hike in <em>Wild</em> mirrors her reckoning with grief and addiction. Whatever your outer conflict is, ask what inner struggle it makes visible.</p></div></div>
+
+        <h3 id="co-types"><span class="h3n">4.2</span>The seven types</h3>
+        <div class="tbl"><table>
+          <thead><tr><th>Type</th><th></th><th>Core</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Man vs. Man</strong></td><td><span class="tag ext">ext</span></td><td>Opposing goals; a mirror agenda</td><td><em>The Great Gatsby</em></td></tr>
+            <tr><td><strong>Man vs. Society</strong></td><td><span class="tag ext">ext</span></td><td>The individual resists conformity</td><td><em>The Hate U Give</em></td></tr>
+            <tr><td><strong>Man vs. Nature</strong></td><td><span class="tag ext">ext</span></td><td>Survival; can’t be reasoned with</td><td><em>The Martian</em></td></tr>
+            <tr><td><strong>Man vs. Technology</strong></td><td><span class="tag ext">ext</span></td><td>The hubris of progress</td><td><em>Frankenstein</em></td></tr>
+            <tr><td><strong>Man vs. Supernatural</strong></td><td><span class="tag both">both</span></td><td>Externalises human fear</td><td><em>Jekyll &amp; Hyde</em></td></tr>
+            <tr><td><strong>Man vs. Fate</strong></td><td><span class="tag both">both</span></td><td>The fight against the inevitable</td><td><em>Macbeth</em></td></tr>
+            <tr><td><strong>Man vs. Self</strong></td><td><span class="tag int">int</span></td><td>Inner dilemma; the deepest empathy</td><td><em>The Hunger Games</em></td></tr>
+          </tbody>
+        </table></div>
+        <div class="principle"><div class="pn">✦</div><div><p style="margin:0"><strong>The collapse insight.</strong> In stories without a human antagonist (vs. nature, vs. fate), the real conflict almost always collapses into <strong>Man vs. Self</strong>. The storm is just the stage the inner battle plays out on.</p></div></div>
+
+        <h3 id="co-stakes"><span class="h3n">4.3</span>Stakes must escalate</h3>
+        <p>Each obstacle should raise the cost of failure as the story proceeds. Flat-line tension bores; a staircase of rising pressure, with reversals, keeps pages turning — which is exactly what <a class="inl" data-go="structure">structure</a> organises.</p>
+        <svg class="escal" viewBox="0 0 820 210" role="img" aria-label="Stakes rising toward the climax">
+          <line x1="34" y1="180" x2="806" y2="180" stroke="var(--rule)" stroke-width="1"/>
+          <text transform="translate(22,112) rotate(-90)" text-anchor="middle" font-family="var(--mono)" font-size="9" letter-spacing="1.5" fill="var(--ink-ghost)">STAKES →</text>
+          <g>
+            <rect x="70"  y="140" width="100" height="40"  rx="4" fill="var(--teal)" fill-opacity=".35"/>
+            <rect x="210" y="112" width="100" height="68"  rx="4" fill="var(--teal)" fill-opacity=".5"/>
+            <rect x="350" y="82"  width="100" height="98"  rx="4" fill="var(--teal)" fill-opacity=".68"/>
+            <rect x="490" y="50"  width="100" height="130" rx="4" fill="var(--teal)" fill-opacity=".84"/>
+            <rect x="630" y="18"  width="100" height="162" rx="4" fill="var(--red)"/>
+          </g>
+          <path d="M120,140 L260,112 L400,82 L540,50 L680,18" fill="none" stroke="var(--red)" stroke-width="1.5" stroke-dasharray="4 4" stroke-opacity=".55"/>
+          <g font-family="var(--mono)" font-size="9.5" fill="var(--ink-faint)" text-anchor="middle">
+            <text x="120" y="196">first test</text><text x="260" y="196">complication</text><text x="400" y="196">setback</text><text x="540" y="196">crisis</text>
+            <text x="680" y="196" fill="var(--red-deep)" font-weight="600">CLIMAX</text>
+          </g>
+        </svg>
+      </div>
+    </section>
+
+    <!-- ============ 5 · STRUCTURE ============ -->
+    <section class="module" id="structure" data-title="Structure" data-phase="The Building Blocks" data-lesson="5">
+      <div class="inner">
+        <div class="mhead"></div>
+        <p class="lead">Structure is the order in which events reach the reader — the part of writing closest to engineering. Learn the universal shape first, then choose a framework as scaffolding.</p>
+
+        <h3 id="st-arc"><span class="h3n">5.1</span>The universal story curve</h3>
+        <p>Beneath every framework is one dramatic arc — tension rising across three acts. Tap a beat to see its job.</p>
+        <div class="arcwrap">
+          <svg class="arc-svg" id="arcsvg" viewBox="0 0 820 300" role="img" aria-label="The dramatic arc across three acts">
+            <defs><linearGradient id="arcgrad" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#a23316" stop-opacity=".16"/><stop offset="1" stop-color="#a23316" stop-opacity="0"/></linearGradient></defs>
+            <rect class="b1" x="42" y="46" width="173" height="226"/>
+            <rect class="b2" x="215" y="46" width="430" height="226"/>
+            <rect class="b3" x="645" y="46" width="155" height="226"/>
+            <line class="sep" x1="215" y1="50" x2="215" y2="272"/>
+            <line class="sep" x1="645" y1="50" x2="645" y2="272"/>
+            <text class="actlbl" x="128" y="38">Act I · setup</text>
+            <text class="actlbl" x="430" y="38">Act II · confrontation</text>
+            <text class="actlbl" x="722" y="38">Act III · resolution</text>
+            <line class="axis" x1="42" y1="272" x2="800" y2="272"/>
+            <text class="axhint" x="42" y="288">time →</text>
+            <text class="axhint" transform="translate(30,200) rotate(-90)" text-anchor="middle">tension →</text>
+            <path class="area" fill="url(#arcgrad)" d="M60,250 C100,244 125,238 150,232 C190,224 220,222 250,210 C320,190 372,180 430,150 C492,120 512,110 540,114 C572,119 580,160 590,176 C620,150 652,96 680,60 C716,82 756,150 790,186 L790,272 L60,272 Z"/>
+            <path class="curve" id="arccurve" d="M60,250 C100,244 125,238 150,232 C190,224 220,222 250,210 C320,190 372,180 430,150 C492,120 512,110 540,114 C572,119 580,160 590,176 C620,150 652,96 680,60 C716,82 756,150 790,186"/>
+          </svg>
+          <div class="arc-readout" id="arcReadout"><div class="rn">›</div><div><h4>The dramatic arc</h4><p>Tap any beat on the curve to see what it does and where it falls.</p></div></div>
+        </div>
+
+        <h3 id="st-beats"><span class="h3n">5.2</span>The beat vocabulary</h3>
+        <p>Frameworks rename these, but the underlying beats are constant — learn them once and every model becomes legible. The two beginners most often misplace: land the <strong>inciting incident</strong> early, and use the <strong>midpoint</strong> to turn the hero from reacting to driving.</p>
+        <div class="cardgrid cg-2">
+          <div class="card"><h4>Inciting incident</h4><p>The catalyst that breaks the status quo and starts the real story. First ~10%.</p></div>
+          <div class="card"><h4>Plot Point 1</h4><p>The hero commits and crosses the threshold into the new situation.</p></div>
+          <div class="card"><h4>Rising action</h4><p>Escalating tests and complications — the bulk of the middle.</p></div>
+          <div class="card"><h4>Midpoint</h4><p>A reversal that raises the stakes and flips the hero from passive to active.</p></div>
+          <div class="card"><h4>Pinch points</h4><p>Pressure beats that remind us what the opposition is capable of.</p></div>
+          <div class="card"><h4>All-Is-Lost · Plot Point 2</h4><p>The lowest point; the plan collapses and the old approach fails.</p></div>
+          <div class="card"><h4>Climax</h4><p>The final confrontation, where the hard-won Need finally becomes usable.</p></div>
+          <div class="card"><h4>Denouement</h4><p>Loose ends resolve and the new normal settles. Don’t skip it.</p></div>
+        </div>
+
+        <h3 id="st-frameworks"><span class="h3n">5.3</span>The framework explorer</h3>
+        <p>Seven proven templates — variations on the same DNA. Pick one and click through its beats.</p>
+        <div class="tabs" id="fwTabs"></div>
+        <div class="explorer" id="fwExplorer"></div>
+
+        <h3 id="st-pick"><span class="h3n">5.4</span>Which one should you use?</h3>
+        <p>Start from your goal, not the catalogue. Click a goal to jump the explorer to its match.</p>
+        <div class="matcher" id="matcher"></div>
+
+        <div class="principle"><div class="pn">▲</div><div><p style="margin:0 0 6px"><strong>Scaffolding, not handcuffs.</strong> A cook follows the recipe exactly; a chef knows it well enough to deviate with intent.</p><p style="margin:0">Know the rules before you break them — for a first project, play them straight, then earn your deviations.</p></div></div>
+      </div>
+    </section>
+
+    <!-- ============ 6 · PROCESS ============ -->
+    <section class="module" id="process" data-title="The Process" data-phase="Writing It" data-lesson="6">
+      <div class="inner">
+        <div class="mhead"></div>
+        <p class="lead">Knowledge doesn’t write the book — this loop does. Six steps from blank page to finished draft.</p>
+
+        <h3 id="pr-loop"><span class="h3n">6.1</span>The build loop</h3>
+        <div class="flow">
+          <div class="node"><span class="nn">01</span><h4>Character / concept</h4><p>Concept-first → plot-driven; character-first → character-driven. Choose consciously.</p></div>
+          <div class="node"><span class="nn">02</span><h4>Inciting incident</h4><p>The catalyst that breaks the status quo. Introduce it early.</p></div>
+          <div class="node"><span class="nn">03</span><h4>Rising action</h4><p>Most of your energy. Layer conflict, characterise constantly, plant twists.</p></div>
+          <div class="node"><span class="nn">04</span><h4>Climax</h4><p>Conflict peaks; the critical choice; the Need becomes usable.</p></div>
+          <div class="node"><span class="nn">05</span><h4>Ending</h4><p>Tie off threads, show the new normal, give closure.</p></div>
+          <div class="node"><span class="nn">06</span><h4>Rewrite</h4><p>Break → reread → show-don’t-tell → ask what the story needs.</p></div>
+        </div>
+
+        <h3 id="pr-mode"><span class="h3n">6.2</span>Know your mode</h3>
+        <div class="cardgrid cg-2">
+          <div class="card"><h4>Plotter</h4><p>Outlines first, knows the ending. Lower risk of dead ends.</p></div>
+          <div class="card"><h4>Pantser</h4><p>Discovers the story while writing, with only an approximate direction.</p></div>
+        </div>
+        <p>Most writers blend the two — and <strong>outlines are tools, not contracts</strong>. Once drafting begins, the story is primary: if it needs a scene the outline didn’t predict, write it.</p>
+
+        <h3 id="pr-discipline"><span class="h3n">6.3</span>Drafting discipline</h3>
+        <div class="cardgrid cg-2">
+          <div class="card"><h4>Kill the inner editor</h4><p>On draft one, anything you put down beats the blank page.</p></div>
+          <div class="card"><h4>Don’t write in order</h4><p>Stuck? Leave a gap, jump ahead, or write a scene in note form.</p></div>
+          <div class="card"><h4>Finish the draft</h4><p>The hardest, most important act. A rough finished draft is fixable; a perfect first chapter is not a book.</p></div>
+          <div class="card"><h4>Read in your genre</h4><p>The last 5–10 years, to absorb current pacing and conventions.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 7 · CRAFT ============ -->
+    <section class="module" id="craft" data-title="Sentence-Level Craft" data-phase="Writing It" data-lesson="7">
+      <div class="inner">
+        <div class="mhead"></div>
+        <p class="lead">Structure gets the skeleton right; this is muscle and skin — the techniques that work line by line.</p>
+
+        <h3 id="cr-show"><span class="h3n">7.1</span>Show, don’t tell</h3>
+        <p>Don’t <em>report</em> emotion — <em>render</em> it through sense, action, and behaviour so the reader is present in the scene.</p>
+        <div class="vs">
+          <div class="v tell"><span class="vl">Telling</span>She was nervous.</div>
+          <div class="v show"><span class="vl">Showing</span>She turned her coffee cup in slow circles, not drinking, her eyes flicking to the door each time it opened.</div>
+        </div>
+
+        <h3 id="cr-craftcards"><span class="h3n">7.2</span>The core techniques</h3>
+        <div class="cardgrid cg-2">
+          <div class="card"><h4>Dialogue</h4><p>Does double duty — advances plot <em>and</em> characterises. Subtext (what’s <em>not</em> said) often carries the most.</p></div>
+          <div class="card"><h4>Exposition</h4><p>Necessary but dangerous. Drip it through action and dialogue; never dump it in slabs.</p></div>
+          <div class="card"><h4>Foreshadowing</h4><p>A good twist is invisible forward, obvious in reverse. Plant clues; ration them; trust the reader.</p></div>
+          <div class="card"><h4>The Rule of Three</h4><p>Three sets a pattern → rhythm and emphasis. Then break it with an “even” for contrast and resolution.</p></div>
+        </div>
+
+        <h3 id="cr-pov"><span class="h3n">7.3</span>Point of view</h3>
+        <div class="tbl"><table>
+          <thead><tr><th>POV</th><th>Feel</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td><strong>First (“I”)</strong></td><td>Most intimate</td><td>Common in short stories; can be unreliable</td></tr>
+            <tr><td><strong>Second (“you”)</strong></td><td>Unusual, immersive</td><td>Rare; high-risk, high-distinctiveness</td></tr>
+            <tr><td><strong>Third limited</strong></td><td>Close, slight distance</td><td>The modern workhorse</td></tr>
+            <tr><td><strong>Third omniscient</strong></td><td>Objective, formal</td><td>More distance; can head-hop if undisciplined</td></tr>
+          </tbody>
+        </table></div>
+        <p>The <em>choice of which character narrates</em> can upend the whole plot — a murder told by the killer is a different book than one told by the detective. Whatever you pick, stay consistent: POV slips are a top beginner error.</p>
+
+        <h3 id="cr-style"><span class="h3n">7.4</span>Style &amp; voice</h3>
+        <p>There is no universal “good prose” — Hemingway’s terse sentences and Morrison’s lush imagery are both masterful. The goal is authenticity, not conformity. Voice emerges from writing a lot and reading widely; don’t manufacture it — uncover it.</p>
+      </div>
+    </section>
+
+    <!-- ============ 8 · FORMS ============ -->
+    <section class="module" id="forms" data-title="Forms &amp; Constraints" data-phase="Writing It" data-lesson="8">
+      <div class="inner">
+        <div class="mhead"></div>
+        <p class="lead">Same DNA, different containers. The constraints of a form decide what you cut and what you emphasise.</p>
+
+        <h3 id="fm-scale"><span class="h3n">8.1</span>The length spectrum</h3>
+        <div class="lenscale">
+          <div class="lenrow"><div class="lenname"><span class="ll">Flash</span><span class="lw">&lt;1,000w</span></div><div class="lenbar" style="width:5%"></div></div>
+          <div class="lenrow"><div class="lenname"><span class="ll">Short story</span><span class="lw">1k–10k</span></div><div class="lenbar" style="width:20%"></div></div>
+          <div class="lenrow"><div class="lenname"><span class="ll">Novella</span><span class="lw">10k–40k</span></div><div class="lenbar" style="width:45%"></div></div>
+          <div class="lenrow"><div class="lenname"><span class="ll">Novel</span><span class="lw">~80k+</span></div><div class="lenbar" style="width:92%"></div></div>
+          <p class="lennote">A <strong>screenplay</strong> sits on a different axis entirely — measured in pages (~110), not words — because behaviour and image, not prose, carry the story.</p>
+        </div>
+        <div class="cardgrid cg-3">
+          <div class="card"><h4>Short story</h4><p>One episode, one emotion. Few characters, single POV, one storyline, minimal backstory. Constraints are the art form.</p></div>
+          <div class="card"><h4>Novel</h4><p>Room for multiple POVs, subplots, a B-story that carries theme. The cost is sustained momentum.</p></div>
+          <div class="card"><h4>Screenplay</h4><p>Visual and external — the camera can’t hear thoughts. Everything shown through action and dialogue.</p></div>
+        </div>
+
+        <h3 id="fm-short"><span class="h3n">8.2</span>The short story, step by step</h3>
+        <div class="stepper">
+          <div class="step" data-n="1"><h4>Find the “first heartbeat”</h4><p>One capsule premise with a complex story latent inside (Kafka’s man who wakes as an insect).</p></div>
+          <div class="step" data-n="2"><h4>A small, distinct cast</h4><p>Sometimes the <em>lack</em> of information about a character is what makes them compelling.</p></div>
+          <div class="step" data-n="3"><h4>Begin close to the end</h4><p>Open <em>in medias res</em>. A great first line raises a question the reader needs answered.</p></div>
+          <div class="step" data-n="4"><h4>Silence the inner editor</h4><p>Overwrite, leave gaps, write scenes as notes. Just reach a draft.</p></div>
+          <div class="step" data-n="5"><h4>Land the ending</h4><p>True to the story’s logic but not predictable. Avoid both “Is that it?” and “What just happened?”</p></div>
+          <div class="step" data-n="6"><h4>Edit, then beta-read</h4><p>Structural pass first, then line polish — then a friendly first audience.</p></div>
+          <div class="step" data-n="7"><h4>Submit</h4><p>Literary magazines, contests, or self-publish. There’s no perfectly final draft.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 9 · REVISION ============ -->
+    <section class="module" id="revision" data-title="Revision &amp; Shipping" data-phase="Finishing" data-lesson="9">
+      <div class="inner">
+        <div class="mhead"></div>
+        <p class="lead">A first draft is raw material, not a product. Revise from the coarsest layer to the finest — and know what readers expect before you ship.</p>
+
+        <h3 id="rv-layers"><span class="h3n">9.1</span>Edit in layers</h3>
+        <div class="funnel">
+          <div class="flayer"><span class="fl">Pass 1 · coarse</span><h4>Structural / developmental</h4><p>Does the causal chain hold? Inciting incident early enough? Midpoint flips the hero active? Climax set up? Cut, add, reorder threads.</p></div>
+          <div class="flayer"><span class="fl">Pass 2 · medium</span><h4>Line edit</h4><p>Rhythm, clarity, dialogue, show-don’t-tell, exposition pacing.</p></div>
+          <div class="flayer"><span class="fl">Pass 3 · fine</span><h4>Polish &amp; proof</h4><p>Interrogate every word. “Is that what I mean? Could I say it better? Did I kill the clichés?”</p></div>
+        </div>
+        <p>Always <strong>take a break before editing</strong> — fresh eyes catch what tired ones can’t.</p>
+
+        <h3 id="rv-traps"><span class="h3n">9.2</span>The beginner traps</h3>
+        <div class="cardgrid cg-2">
+          <div class="warn"><b>Starting too early.</b> Cramming setup before the story begins.</div>
+          <div class="warn"><b>Exposition over action.</b> Telling instead of dramatising.</div>
+          <div class="warn"><b>Weak motivation.</b> We don’t know why they want it.</div>
+          <div class="warn"><b>Pacing wobble.</b> Rushing key beats, lingering on setup.</div>
+          <div class="warn"><b>Flat dialogue.</b> Over-explaining; no subtext.</div>
+          <div class="warn"><b>POV head-hopping.</b> The lens jumps without discipline.</div>
+          <div class="warn"><b>“Done” = first draft.</b> Be your own editor first.</div>
+          <div class="warn"><b>Template too literally.</b> A watered-down version of your own voice.</div>
+        </div>
+
+        <h3 id="rv-ship"><span class="h3n">9.3</span>Shipping routes</h3>
+        <p><strong>Short fiction:</strong> literary magazines, contests, or self-publishing. <strong>Novels:</strong> traditional (agent → publisher; slow, often years) vs. self-publishing (faster, more control). Because traditional timelines are long, <strong>write the story you’re passionate about</strong> rather than chase a trend that may pass before you’re done. And know your genre’s <strong>absolutes</strong> — romance needs a happy/hopeful ending; MG and YA have firm age expectations. Break an absolute and you’re usually writing a different genre than you think.</p>
+      </div>
+    </section>
+
+    <!-- ============ 10 · CHEAT SHEET ============ -->
+    <section class="module" id="cheatsheet" data-title="The Cheat Sheet" data-phase="Reference" data-lesson="10">
+      <div class="inner wide">
+        <div class="mhead"></div>
+        <div class="bigquote">A character <strong>wants</strong> something; an <strong>obstacle</strong> stands in the way; the pursuit <strong>changes them.</strong></div>
+        <div class="cardgrid cg-3">
+          <div class="card"><h4>The five laws</h4><ol style="margin:0;padding-left:1.1em;font-size:14.5px"><li>Therefore, not “and then.”</li><li>Conflict is story.</li><li>Want vs. Need.</li><li>Show, don’t tell.</li><li>Finish the draft.</li></ol></div>
+          <div class="card"><h4>The seven elements</h4><p style="font-size:14.5px;margin:0">Theme · Character · Setting · Plot · Conflict · POV · Style</p></div>
+          <div class="card"><h4>Character order</h4><p style="font-size:14.5px;margin:0">Wants &amp; Needs → Strengths &amp; Flaws → Necessary opponent → Foils → Look → Research → Arc. Frame: G·M·C.</p></div>
+          <div class="card"><h4>Universal beats</h4><p style="font-size:14.5px;margin:0">Inciting incident (early!) → Plot Point 1 → Midpoint → Pinch → All-Is-Lost → Dark Night → Climax → Denouement.</p></div>
+          <div class="card"><h4>The six-step build</h4><p style="font-size:14.5px;margin:0">Character/concept → Inciting incident → Rising action → Climax → Ending → Rewrite.</p></div>
+          <div class="card"><h4>Frameworks at a glance</h4><p style="font-size:14px;margin:0">Three-Act · default. Hero’s Journey · quests. Save the Cat · scripts. Seven-Point · design from the end. Story Circle · series. Fichtean · fast start. Freytag · tragedy.</p></div>
+        </div>
+        <h4 style="font-family:var(--display);font-size:22px;margin:34px 0 6px">Pre-ship checklist</h4>
+        <ul class="checklist" style="columns:2;column-gap:34px">
+          <li>Inciting incident in first ~10%</li>
+          <li>Every transition is “therefore / but”</li>
+          <li>Internal <em>and</em> external conflict present</li>
+          <li>Midpoint flips the hero to active</li>
+          <li>Climax is set up, not arbitrary</li>
+          <li>Denouement delivers closure</li>
+          <li>POV consistent</li>
+          <li>Exposition dripped, not dumped</li>
+          <li>Clichés cut</li>
+          <li>Slept on it, then edited in layers</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ RESOURCES ============ -->
+    <section class="module" id="resources" data-title="Sources &amp; Further Reading" data-phase="Reference">
+      <div class="inner wide">
+        <div class="mhead"></div>
+        <p class="lead">This course synthesises the Reedsy craft library. Go deeper at the original guides.</p>
+        <div class="resgrid">
+          <div class="card rescard"><h4>Foundations &amp; process</h4><ul>
+            <li><a href="https://reedsy.com/blog/elements-of-a-story/">7 Elements of a Story</a></li>
+            <li><a href="https://reedsy.com/blog/how-to-write-a-story/">How to Write a Story (6 steps)</a></li>
+            <li><a href="https://reedsy.com/studio/resources/how-to-write-a-short-story">How to Write a Short Story (8 steps)</a></li>
+            <li><a href="https://reedsy.com/learning">How to Write a Novel (course)</a></li>
+            <li><a href="https://blog.reedsy.com/show-dont-tell/">Show, Don’t Tell</a></li>
+          </ul></div>
+          <div class="card rescard"><h4>Structure</h4><ul>
+            <li><a href="https://reedsy.com/blog/guide/story-structure/">Story Structure: 7 Types</a></li>
+            <li><a href="https://reedsy.com/blog/guide/story-structure/three-act-structure/">Three-Act Structure</a></li>
+            <li><a href="https://reedsy.com/blog/guide/story-structure/heros-journey/">The Hero’s Journey</a></li>
+            <li><a href="https://reedsy.com/blog/guide/story-structure/seven-point-story-structure/">Seven-Point Structure</a></li>
+            <li><a href="https://reedsy.com/blog/guide/story-structure/save-the-cat-beat-sheet/">Save the Cat Beat Sheet</a></li>
+            <li><a href="https://reedsy.com/blog/guide/story-structure/dan-harmon-story-circle/">Dan Harmon Story Circle</a></li>
+            <li><a href="https://reedsy.com/blog/guide/story-structure/fichtean-curve/">Fichtean Curve</a></li>
+            <li><a href="https://reedsy.com/blog/guide/story-structure/freytags-pyramid/">Freytag’s Pyramid</a></li>
+            <li><a href="https://reedsy.com/learning/events/the-rule-of-three">The Rule of Three</a></li>
+          </ul></div>
+          <div class="card rescard"><h4>Character</h4><ul>
+            <li><a href="https://reedsy.com/blog/character-development/">Character Development (5 steps)</a></li>
+            <li><a href="https://blog.reedsy.com/character-arc/">Character Arc</a></li>
+            <li><a href="https://blog.reedsy.com/protagonist-and-antagonist/">Protagonist &amp; Antagonist</a></li>
+            <li><a href="https://blog.reedsy.com/character-motivation/">Character Motivation</a></li>
+            <li><a href="https://blog.reedsy.com/character-profile/">Character Profile Template</a></li>
+            <li><a href="https://reedsy.com/blog/character-traits/">200+ Character Traits</a></li>
+          </ul></div>
+          <div class="card rescard"><h4>Conflict, plot &amp; theme</h4><ul>
+            <li><a href="https://reedsy.com/blog/guide/conflict/">7 Types of Conflict</a></li>
+            <li><a href="https://blog.reedsy.com/guide/conflict/create-conflict-in-a-story/">Create Conflict in a Story</a></li>
+            <li><a href="https://blog.reedsy.com/guide/plot/">What is Plot?</a></li>
+            <li><a href="https://blog.reedsy.com/guide/theme/">Theme</a></li>
+            <li><a href="https://blog.reedsy.com/rising-action/">Rising Action</a> · <a href="https://blog.reedsy.com/climax-of-a-story/">Climax</a> · <a href="https://blog.reedsy.com/what-is-a-denouement/">Denouement</a></li>
+            <li><a href="https://blog.reedsy.com/inciting-incident/">Inciting Incident</a></li>
+          </ul></div>
+          <div class="card rescard"><h4>Setting, POV &amp; sentence craft</h4><ul>
+            <li><a href="https://blog.reedsy.com/setting-of-a-story/">Setting of a Story</a> · <a href="https://blog.reedsy.com/worldbuilding-guide/">Worldbuilding</a></li>
+            <li><a href="https://blog.reedsy.com/guide/point-of-view/">Point of View (guide)</a></li>
+            <li><a href="https://blog.reedsy.com/guide/how-to-write-dialogue/">How to Write Dialogue</a></li>
+            <li><a href="https://blog.reedsy.com/what-is-foreshadowing/">Foreshadowing</a></li>
+            <li><a href="https://blog.reedsy.com/literary-devices/">45+ Literary Devices</a></li>
+          </ul></div>
+          <div class="card rescard"><h4>Revision &amp; publishing</h4><ul>
+            <li><a href="https://blog.reedsy.com/how-to-edit-a-book/">How to Edit a Book</a></li>
+            <li><a href="https://blog.reedsy.com/beta-readers/">Beta Readers</a></li>
+            <li><a href="https://blog.reedsy.com/how-to-end-a-story/">How to End a Story</a></li>
+            <li><a href="https://blog.reedsy.com/guide/short-story/how-to-publish-a-short-story/">Publishing a Short Story</a></li>
+            <li><a href="https://reedsy.com/creative-writing-prompts/">Writing Prompts</a></li>
+          </ul></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<button id="toTop" aria-label="Back to top">↑</button>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------------- data ---------------- */
+var PHASES=[
+  {name:"Foundations",color:"var(--red)"},
+  {name:"The Building Blocks",color:"var(--teal)"},
+  {name:"Writing It",color:"var(--ochre)"},
+  {name:"Finishing",color:"var(--red-deep)"},
+  {name:"Reference",color:"var(--ink-faint)"}
+];
+var MODS=[
+  {id:"first-principles",n:"01",title:"First Principles",phase:0,role:"the physics",blurb:"What a story fundamentally is.",
+    take:["A story = want + obstacle + change","“Therefore”, never “and then”","Meaning lives in the Want–Need gap"],
+    subs:[["fp-def","What a story is"],["fp-cause","Causality"],["fp-conflict","Conflict is story"],["fp-wantneed","Want vs. Need"]]},
+  {id:"elements",n:"02",title:"The Seven Elements",phase:0,role:"the parts list",blurb:"The components every story shares.",
+    take:["Seven modules, seven jobs","Diagnose flatness by element"],subs:[]},
+  {id:"character",n:"03",title:"Character",phase:1,role:"the engine",blurb:"Who drives the whole machine.",
+    take:["Build in a fixed order","Want vs. Need first","The antagonist forces growth"],
+    subs:[["ch-build","The build order"],["ch-arc","The three arcs"],["ch-gmc","G·M·C frame"]]},
+  {id:"conflict",n:"04",title:"Conflict",phase:1,role:"the fuel",blurb:"What turns a goal into a story.",
+    take:["Use internal AND external","Seven recurring types","Stakes must escalate"],
+    subs:[["co-axes","Internal & external"],["co-types","The seven types"],["co-stakes","Escalation"]]},
+  {id:"structure",n:"05",title:"Structure",phase:1,role:"the architecture",blurb:"The order events reach the reader.",
+    take:["One universal curve underneath","Seven frameworks to choose from","Pick by goal, not catalogue"],
+    subs:[["st-arc","The story curve"],["st-beats","Beat vocabulary"],["st-frameworks","Framework explorer"],["st-pick","Which to use"]]},
+  {id:"process",n:"06",title:"The Process",phase:2,role:"the build",blurb:"Blank page to finished draft.",
+    take:["Six-step loop","Plotter vs. pantser","Finishing beats perfecting"],
+    subs:[["pr-loop","The build loop"],["pr-mode","Know your mode"],["pr-discipline","Drafting discipline"]]},
+  {id:"craft",n:"07",title:"Sentence-Level Craft",phase:2,role:"the finish",blurb:"Technique, line by line.",
+    take:["Show, don’t tell","POV is a high-leverage choice","Voice is uncovered, not forced"],
+    subs:[["cr-show","Show, don’t tell"],["cr-craftcards","Core techniques"],["cr-pov","Point of view"],["cr-style","Style & voice"]]},
+  {id:"forms",n:"08",title:"Forms & Constraints",phase:2,role:"the spec",blurb:"Same DNA, different containers.",
+    take:["Length decides what you cut","Short story = one episode","Screenplay = behaviour only"],
+    subs:[["fm-scale","Length spectrum"],["fm-short","Short story, step by step"]]},
+  {id:"revision",n:"09",title:"Revision & Shipping",phase:3,role:"quality & release",blurb:"Turn a draft into a product.",
+    take:["Edit coarse → fine","Avoid the beginner traps","Write your passion, know the absolutes"],
+    subs:[["rv-layers","Edit in layers"],["rv-traps","Beginner traps"],["rv-ship","Shipping routes"]]},
+  {id:"cheatsheet",n:"10",title:"The Cheat Sheet",phase:4,role:"quick reference",blurb:"Everything load-bearing on one screen.",take:[],subs:[]},
+  {id:"resources",n:"§",title:"Sources & Reading",phase:4,role:"go deeper",blurb:"The original guides.",take:[],subs:[]}
+];
+var LESSONS=MODS.filter(function(m){return m.id!=="resources";}).map(function(m){return m.id;}); // 10 lessons
+var ORDER=["home"].concat(MODS.map(function(m){return m.id;}));
+
+/* frameworks */
+var FRAMEWORKS=[
+  {id:"three-act",name:"Three-Act",best:"default",desc:"Setup → Confrontation → Resolution. Lowest overhead, maximum flexibility. Start here.",
+   beats:["Exposition","Inciting Incident","Plot Point 1","Rising Action","Midpoint","Plot Point 2","Climax","Denouement"]},
+  {id:"hero",name:"Hero’s Journey",best:"quests",desc:"A simplified monomyth — maps cleanly onto everything from Star Wars to Rocky.",
+   beats:["Ordinary World","Call","Refusal","Mentor","Threshold","Tests","Ordeal","Reward","Road Back","Resurrection","Return"]},
+  {id:"stc",name:"Save the Cat",best:"scripts",desc:"Page-timed beats for a 110-page script; the B-Story carries the theme. Most prescriptive.",
+   beats:["Opening Image","Theme Stated","Set-Up","Catalyst","Debate","Break into 2","B-Story","Fun & Games","Midpoint","Bad Guys Close In","All Is Lost","Dark Night","Break into 3","Finale","Final Image"]},
+  {id:"seven",name:"Seven-Point",best:"design from the end",desc:"Define the Resolution first, then build the Hook as its mirror image for maximum contrast.",
+   beats:["Hook","Plot Turn 1","Pinch 1","Midpoint","Pinch 2","Plot Turn 2","Resolution"]},
+  {id:"circle",name:"Story Circle",best:"series",desc:"A monomyth phrased entirely around want and need — forgiving for recurring characters.",
+   beats:["Comfort","Want","Cross over","Adapt","Find it","Pay the price","Return","Changed"]},
+  {id:"fichtean",name:"Fichtean Curve",best:"fast starts",desc:"Skip the ordinary world. Open at the inciting incident and stack escalating crises to the climax.",
+   beats:["Inciting Incident","Crisis","Crisis","Crisis","Climax","Falling Action"]},
+  {id:"freytag",name:"Freytag’s Pyramid",best:"tragedy",desc:"The classical tragic shape — the protagonist ends at their lowest point.",
+   beats:["Introduction","Rising Action","Climax","Fall","Catastrophe"]}
+];
+var MATCH=[
+  ["A safe, flexible default","Three-Act","three-act"],
+  ["A transformation or quest","Hero’s Journey","hero"],
+  ["Maximum guidance, page-timed","Save the Cat","stc"],
+  ["To design from the ending","Seven-Point","seven"],
+  ["Character-want focus / a series","Story Circle","circle"],
+  ["To start fast, crisis-driven","Fichtean Curve","fichtean"],
+  ["A true tragedy","Freytag’s Pyramid","freytag"]
+];
+
+/* story-curve beats */
+var ARC=[
+  {x:60,y:250,t:"Exposition",d:"The ordinary world and the protagonist’s desire — kept brief."},
+  {x:150,y:232,t:"Inciting Incident",d:"The catalyst that breaks the status quo. Land it in the first ~10%."},
+  {x:250,y:210,t:"Plot Point 1",d:"The hero commits and crosses the threshold — Act II begins."},
+  {x:430,y:150,t:"Midpoint",d:"A reversal that raises the stakes and flips the hero from reacting to driving."},
+  {x:590,y:176,t:"All Is Lost",d:"The lowest point — the plan collapses before the final push."},
+  {x:680,y:60,t:"Climax",d:"Conflict peaks; the critical choice; the Need becomes usable. Act III."},
+  {x:790,y:186,t:"Resolution",d:"Loose ends tie off; we see the new normal. Don’t skip it."}
+];
+
+/* ---------------- storage (guarded) ---------------- */
+function loadStore(key){ try{ return JSON.parse(localStorage.getItem(key)||"{}")||{}; }catch(e){ return {}; } }
+function putStore(key,obj){ try{ localStorage.setItem(key,JSON.stringify(obj)); }catch(e){} }
+var DONE={};
+try{ DONE=JSON.parse(localStorage.getItem("aos_done")||"{}")||{}; }catch(e){ DONE={}; }
+function saveDone(){ try{ localStorage.setItem("aos_done",JSON.stringify(DONE)); }catch(e){} }
+var CHECKS=loadStore("aos_checks");
+var WORK=loadStore("aos_work");
+
+/* ---------------- build sidebar ---------------- */
+var nav=document.getElementById("nav");
+var navLinks={};
+(function buildNav(){
+  var homeBtn=document.createElement("button");
+  homeBtn.className="navlink"; homeBtn.dataset.go="home";
+  homeBtn.innerHTML='<span class="n">◊</span><span class="t">Course Map</span><span class="chk"></span>';
+  nav.appendChild(homeBtn); navLinks["home"]=homeBtn;
+
+  PHASES.forEach(function(ph,pi){
+    var inThis=MODS.filter(function(m){return m.phase===pi;});
+    if(!inThis.length) return;
+    var ph_el=document.createElement("div"); ph_el.className="phase";
+    ph_el.innerHTML='<span class="pd" style="background:'+ph.color+'"></span>'+ph.name;
+    nav.appendChild(ph_el);
+    inThis.forEach(function(m){
+      var b=document.createElement("button"); b.className="navlink"; b.dataset.go=m.id;
+      b.innerHTML='<span class="n">'+m.n+'</span><span class="t">'+m.title+'</span><span class="chk">✓</span>';
+      nav.appendChild(b); navLinks[m.id]=b;
+      if(m.subs&&m.subs.length){
+        var sn=document.createElement("div"); sn.className="subnav";
+        m.subs.forEach(function(s){
+          var a=document.createElement("a"); a.href="#"+m.id+"::"+s[0]; a.textContent=s[1];
+          a.dataset.go=m.id; a.dataset.anchor=s[0]; sn.appendChild(a);
+        });
+        nav.appendChild(sn);
+      }
+    });
+  });
+})();
+
+/* ---------------- build module heroes ---------------- */
+MODS.forEach(function(m){
+  if(m.id==="resources"){ // simple head
+    var sec=document.getElementById(m.id); var h=sec.querySelector(".mhead");
+    h.innerHTML='<div class="crumb"><span class="ptag" style="background:'+PHASES[m.phase].color+'">'+PHASES[m.phase].name+'</span></div><h2>'+m.title+'</h2>';
+    return;
+  }
+  var sec=document.getElementById(m.id); if(!sec) return;
+  var head=sec.querySelector(".mhead"); if(!head) return;
+  var ph=PHASES[m.phase];
+  var crumb='<div class="crumb"><span class="ptag" style="background:'+ph.color+'">'+ph.name+'</span>';
+  if(m.phase<4||m.id==="cheatsheet"){ crumb+='<span>Lesson '+(LESSONS.indexOf(m.id)+1)+' of '+LESSONS.length+'</span>'; }
+  crumb+='</div>';
+  var take=""; if(m.take&&m.take.length){
+    take='<div class="takeaways">'+m.take.map(function(t,i){return '<div class="takeaway"><span class="tk">'+(i+1)+'</span><span>'+t+'</span></div>';}).join("")+'</div>';
+  }
+  head.innerHTML=crumb+'<h2>'+m.title+'</h2><p class="bigidea">'+m.blurb+'</p>'+take;
+});
+
+/* ---------------- build course map (home) ---------------- */
+(function buildMap(){
+  var map=document.getElementById("coursemap");
+  PHASES.forEach(function(ph,pi){
+    var col=document.createElement("div"); col.className="mapcol";
+    var head=document.createElement("div"); head.className="mch";
+    head.style.borderColor=ph.color; head.style.color=ph.color;
+    head.innerHTML='<span class="pd" style="background:'+ph.color+';width:6px;height:6px;transform:rotate(45deg)"></span>'+ph.name;
+    col.appendChild(head);
+    MODS.filter(function(m){return m.phase===pi;}).forEach(function(m){
+      var node=document.createElement("button"); node.className="mapnode"; node.dataset.go=m.id;
+      node.innerHTML='<span class="mn">'+m.n+'</span><h4>'+m.title+'</h4><span class="role">'+m.role+'</span><p>'+m.blurb+'</p>';
+      col.appendChild(node);
+    });
+    map.appendChild(col);
+  });
+})();
+
+/* ---------------- framework explorer ---------------- */
+(function buildExplorer(){
+  var tabs=document.getElementById("fwTabs");
+  FRAMEWORKS.forEach(function(f,i){
+    var t=document.createElement("button"); t.className="tab"+(i===0?" active":""); t.textContent=f.name; t.dataset.fw=f.id;
+    tabs.appendChild(t);
+  });
+  renderFw(FRAMEWORKS[0]);
+  tabs.addEventListener("click",function(e){
+    var t=e.target.closest(".tab"); if(!t) return;
+    tabs.querySelectorAll(".tab").forEach(function(x){x.classList.remove("active");});
+    t.classList.add("active");
+    renderFw(FRAMEWORKS.filter(function(f){return f.id===t.dataset.fw;})[0]);
+  });
+  // matcher
+  var mEl=document.getElementById("matcher");
+  MATCH.forEach(function(r){
+    var row=document.createElement("div"); row.className="mrow"; row.dataset.fw=r[2];
+    row.innerHTML='<span class="goal">'+r[0]+'</span><span class="fw">'+r[1]+'</span><span class="go">↗</span>';
+    mEl.appendChild(row);
+  });
+  mEl.addEventListener("click",function(e){
+    var row=e.target.closest(".mrow"); if(!row) return;
+    var id=row.dataset.fw;
+    tabs.querySelectorAll(".tab").forEach(function(x){x.classList.toggle("active",x.dataset.fw===id);});
+    renderFw(FRAMEWORKS.filter(function(f){return f.id===id;})[0]);
+    document.getElementById("fwExplorer").scrollIntoView({behavior:"smooth",block:"center"});
+  });
+  function renderFw(f){
+    var strip=f.beats.map(function(b,i){return '<span class="beat"><span class="bi">'+(i+1)+'</span>'+b+'</span>';}).join("");
+    document.getElementById("fwExplorer").innerHTML=
+      '<div class="ex-top"><h4>'+f.name+'</h4><span class="best">best for: '+f.best+'</span></div>'+
+      '<p class="ex-desc">'+f.desc+'</p><div class="beatstrip">'+strip+'</div>';
+  }
+})();
+
+/* ---------------- story curve interaction ---------------- */
+(function buildArc(){
+  var svg=document.getElementById("arcsvg"); if(!svg) return;
+  var ns="http://www.w3.org/2000/svg";
+  var read=document.getElementById("arcReadout");
+  function show(b,el){
+    svg.querySelectorAll(".beatdot").forEach(function(d){d.classList.remove("sel");});
+    if(el) el.classList.add("sel");
+    read.innerHTML='<div class="rn">●</div><div><h4>'+b.t+'</h4><p>'+b.d+'</p></div>';
+  }
+  ARC.forEach(function(b,i){
+    var c=document.createElementNS(ns,"circle");
+    c.setAttribute("class","beatdot"); c.setAttribute("cx",b.x); c.setAttribute("cy",b.y); c.setAttribute("r","6.5");
+    c.setAttribute("tabindex","0"); c.setAttribute("role","button"); c.setAttribute("aria-label",b.t);
+    c.addEventListener("mouseenter",function(){show(b,c);});
+    c.addEventListener("click",function(){show(b,c);});
+    c.addEventListener("focus",function(){show(b,c);});
+    svg.appendChild(c);
+    var lab=document.createElementNS(ns,"text");
+    lab.setAttribute("class","beatlbl");
+    lab.setAttribute("x",b.x); lab.setAttribute("y", b.y<160 ? b.y-14 : b.y+22);
+    lab.setAttribute("text-anchor", b.x<80?"start":(b.x>760?"end":"middle"));
+    lab.textContent=b.t; svg.appendChild(lab);
+  });
+})();
+
+/* ---------------- router ---------------- */
+var main=document.getElementById("main");
+var sidebar=document.getElementById("sidebar"); var overlay=document.getElementById("overlay");
+function isMobile(){return window.innerWidth<=860;}
+function closeDrawer(){sidebar.classList.remove("open");overlay.classList.remove("show");}
+
+function setActive(id){
+  Object.keys(navLinks).forEach(function(k){navLinks[k].classList.toggle("active",k===id);});
+}
+function show(id,anchor){
+  if(!document.getElementById(id)) id="home";
+  document.querySelectorAll(".module").forEach(function(m){m.classList.toggle("active",m.id===id);});
+  setActive(id);
+  // scroll
+  if(anchor){
+    var a=document.getElementById(anchor);
+    setTimeout(function(){ if(a) a.scrollIntoView({behavior:"smooth",block:"start"}); else window.scrollTo(0,0); },60);
+  } else { window.scrollTo({top:0,behavior:"auto"}); }
+  buildPrevNext(id);
+  refreshChecks();
+  if(isMobile()) closeDrawer();
+}
+function go(id,anchor){
+  var hash = anchor ? (id+"::"+anchor) : id;
+  if(location.hash.slice(1)===hash){ show(id,anchor); } else { location.hash=hash; }
+}
+window.addEventListener("hashchange",function(){route();});
+function route(){
+  var h=decodeURIComponent(location.hash.slice(1));
+  if(!h){ show("home"); return; }
+  var parts=h.split("::"); show(parts[0],parts[1]);
+}
+
+/* delegate all [data-go] clicks */
+document.addEventListener("click",function(e){
+  var el=e.target.closest("[data-go]"); if(!el) return;
+  e.preventDefault();
+  go(el.dataset.go, el.dataset.anchor||null);
+});
+
+/* ---------------- prev / next ---------------- */
+function buildPrevNext(id){
+  var sec=document.getElementById(id); if(!sec) return;
+  var inner=sec.querySelector(".inner"); if(!inner) return;
+  var old=inner.querySelector(".prevnext"); if(old) old.remove();
+  var oldC=inner.querySelector(".complete"); if(oldC) oldC.remove();
+  if(id==="home") return;
+
+  // complete toggle (lessons only)
+  if(LESSONS.indexOf(id)!==-1){
+    var c=document.createElement("div"); c.className="complete";
+    var done=!!DONE[id];
+    c.innerHTML='<button class="btn'+(done?" done":"")+'" id="cbtn">'+(done?"✓ Completed":"Mark this lesson complete")+'</button>';
+    inner.appendChild(c);
+    c.querySelector("#cbtn").addEventListener("click",function(){
+      DONE[id]=!DONE[id]; saveDone(); refreshChecks();
+      var b=c.querySelector("#cbtn");
+      b.classList.toggle("done",!!DONE[id]);
+      b.textContent=DONE[id]?"✓ Completed":"Mark this lesson complete";
+    });
+  }
+
+  var idx=ORDER.indexOf(id);
+  var prev=idx>0?ORDER[idx-1]:null, next=idx<ORDER.length-1?ORDER[idx+1]:null;
+  function meta(mid){ if(mid==="home") return {t:"Course Map"}; var m=MODS.filter(function(x){return x.id===mid;})[0]; return {t:m?m.title:""}; }
+  var pn=document.createElement("div"); pn.className="prevnext";
+  var prevHTML = prev?'<a class="pn" data-go="'+prev+'"><span class="d">← Previous</span><div class="tt">'+meta(prev).t+'</div></a>':'<span></span>';
+  var nextHTML = next?'<a class="pn next" data-go="'+next+'"><span class="d">Next →</span><div class="tt">'+meta(next).t+'</div></a>'
+                     :'<a class="pn next" data-go="home"><span class="d">Course complete ↺</span><div class="tt">Back to the map</div></a>';
+  pn.innerHTML=prevHTML+nextHTML;
+  inner.appendChild(pn);
+}
+
+/* ---------------- progress ring + checks ---------------- */
+var ringfg=document.getElementById("ringfg"), ringtxt=document.getElementById("ringtxt");
+function refreshChecks(){
+  var done=0;
+  LESSONS.forEach(function(id){ if(DONE[id]){done++; if(navLinks[id])navLinks[id].classList.add("done");} else if(navLinks[id]) navLinks[id].classList.remove("done"); });
+  var pct=done/LESSONS.length;
+  var circ=2*Math.PI*14;
+  ringfg.setAttribute("stroke-dasharray",circ.toFixed(1));
+  ringfg.setAttribute("stroke-dashoffset",(circ*(1-pct)).toFixed(1));
+  ringtxt.innerHTML=done+" of "+LESSONS.length+" lessons<br>complete";
+}
+
+/* ---------------- chrome: scrollbar, toTop, drawer, search, keys ---------------- */
+var bar=document.getElementById("scrollbar"), toTop=document.getElementById("toTop");
+window.addEventListener("scroll",function(){
+  var h=document.documentElement,s=h.scrollTop,max=h.scrollHeight-h.clientHeight;
+  bar.style.width=(max>0?(s/max)*100:0)+"%";
+  toTop.classList.toggle("show",s>500);
+},{passive:true});
+toTop.addEventListener("click",function(){window.scrollTo({top:0,behavior:"smooth"});});
+
+document.getElementById("menuBtn").addEventListener("click",function(){
+  sidebar.classList.toggle("open"); overlay.classList.toggle("show",sidebar.classList.contains("open"));
+});
+overlay.addEventListener("click",closeDrawer);
+
+var search=document.getElementById("search");
+search.addEventListener("input",function(){
+  var q=search.value.trim().toLowerCase();
+  // search lesson titles + takeaways + sub labels
+  Object.keys(navLinks).forEach(function(id){
+    var link=navLinks[id]; if(id==="home"){link.style.display="";return;}
+    var m=MODS.filter(function(x){return x.id===id;})[0]; if(!m){link.style.display="";return;}
+    var hay=(m.title+" "+(m.take||[]).join(" ")+" "+(m.subs||[]).map(function(s){return s[1];}).join(" ")).toLowerCase();
+    var match=!q||hay.indexOf(q)!==-1;
+    link.style.display=match?"":"none";
+    var sn=link.nextElementSibling;
+    if(sn&&sn.classList.contains("subnav")) sn.style.display=match&&link.classList.contains("active")?"":(match?"":"none");
+  });
+  // hide empty phase headers
+  nav.querySelectorAll(".phase").forEach(function(ph){
+    var el=ph.nextElementSibling, any=false;
+    while(el&&!el.classList.contains("phase")){ if(el.classList.contains("navlink")&&el.style.display!=="none") any=true; el=el.nextElementSibling; }
+    ph.style.display=any?"":"none";
+  });
+});
+
+document.addEventListener("keydown",function(e){
+  if(e.target.tagName==="INPUT"||e.target.tagName==="TEXTAREA"||e.target.isContentEditable) return;
+  var cur=location.hash.slice(1).split("::")[0]||"home";
+  var idx=ORDER.indexOf(cur);
+  if(e.key==="ArrowRight"&&idx<ORDER.length-1) go(ORDER[idx+1]);
+  if(e.key==="ArrowLeft"&&idx>0) go(ORDER[idx-1]);
+});
+
+/* ---------------- init ---------------- */
+var resetBtn=document.getElementById("resetBtn");
+if(resetBtn){ resetBtn.addEventListener("click",function(){
+  DONE={}; saveDone(); refreshChecks();
+  var cur=location.hash.slice(1).split("::")[0]||"home"; buildPrevNext(cur);
+}); }
+refreshChecks();
+route();
+})();
+</script>
+</body>
+</html>
